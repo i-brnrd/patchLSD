@@ -7,9 +7,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     // GameObjects 
-    public Presentation Presentation; // script  
+    public Presentation Presentation; // script
+    public LSD LSD;
+
+  
     public GameObject presentation; // object 
     public GameObject fixationCross;
+    public GameObject canvas;
 
 
     // Temp for testing (patches) 
@@ -22,12 +26,12 @@ public class GameManager : MonoBehaviour
     private float EVENTDISPLAYTIME = 2.0f;
 
     // Envs 
-    private bool envB = true; // in the blue env 
+    private bool envB = true; // in the blue env
+    public bool inChoicePhase = false; 
 
     // Data Persistance 
     private string pathToLogs;
 
-    // public void Awak (shld contain references to scripts conining the game data) 
 
     private void Awake()
     {
@@ -45,6 +49,7 @@ public class GameManager : MonoBehaviour
         // read in the patches from Marco's dataset here via an external script acting on GameData object
         // read in the data then read in the patches in that script 
         presentation.SetActive(false);
+        canvas.SetActive(false);
     }
 
     // Start is called before the first frame update
@@ -107,7 +112,17 @@ public class GameManager : MonoBehaviour
     {
         eventNo++;
         presentation.SetActive(false);
-        StartCoroutine(InterEvent());
+        bool endPatch = (eventNo == patch.Length);
+        if (endPatch)
+        {
+            canvas.SetActive(true);
+            LSD.ChoicePhase();
+        } else
+        {
+            StartCoroutine(InterEvent());
+        }
+
+      
     }
 
 }
