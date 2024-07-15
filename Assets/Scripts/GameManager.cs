@@ -35,17 +35,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // get timestamp and write as a filename 
-        DateTime currentTime = DateTime.Now;
-        string fileName = currentTime.ToString("yyyy.MM.dd.HH.mm.ss");
-
-        pathToLogs = Application.persistentDataPath + "/" + fileName + ".txt";
-        using (StreamWriter dataOut = File.CreateText(pathToLogs))
-        {
-            dataOut.WriteLine("Task Initialised at: " + DateTime.Now.ToString());
-            dataOut.WriteLine("WHAT ARE THE COLUMN TITLES IDK");
-        }
-
+       
         // read in the patches from Marco's dataset here via an external script acting on GameData object
         // read in the data then read in the patches in that script 
         presentation.SetActive(false);
@@ -55,7 +45,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        patch = new float[] { 0.0f, 0.0f, 0.8f, 0.0f, 0f, 0f, 0.8f, 0f, 0f, 0f, 0.9f, 1.0f, 0.0f };
+        patch = new float[] { 0.0f, 0.0f, 0.4f, 0.0f, 0f, 0f, 0.6f, 0f, 0f, 0f, 0.9f, 1.0f,0.0f,0.0f,1.0f, 0.0f };
         defaultPatch = new float[] { 0.0f, 0.0f, 0.8f, 0.0f, 0f, 0f, 0.8f, 0f, 0f, 0f, 0.9f, 1.0f, 0.0f };
 
         StartTask();
@@ -115,6 +105,7 @@ public class GameManager : MonoBehaviour
         bool endPatch = (eventNo == patch.Length);
         if (endPatch)
         {
+            inChoicePhase = true;
             canvas.SetActive(true);
             LSD.ChoicePhase();
         } else
@@ -123,6 +114,30 @@ public class GameManager : MonoBehaviour
         }
 
       
+    }
+
+
+    private void Update()
+    {
+        if (inChoicePhase)
+        {
+
+
+            // wait for choice, cathc the choices and reset inChoicePhase to decision made I guess. 
+        }
+    }
+
+
+    private void InitLogFile()
+    {
+        DateTime currentTime = DateTime.Now;
+        string fileName = currentTime.ToString("yyyy.MM.dd.HH.mm.ss");
+
+        pathToLogs = Application.persistentDataPath + "/" + fileName + ".txt";
+
+        using StreamWriter dataOut = File.CreateText(pathToLogs);
+        dataOut.WriteLine("Task Initialised at: " + DateTime.Now.ToString());
+        dataOut.WriteLine("CHOOSE WHAT TO READ OUT");
     }
 
 }

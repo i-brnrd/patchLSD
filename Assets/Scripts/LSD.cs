@@ -53,7 +53,11 @@ public class LSD : MonoBehaviour
             stayButton.transform.localPosition = leftButtonPos;
         }
 
+
+     
     }
+
+    // nON CLICK I need to make bot buttons non interactavle and then pass back to the main script I guess 
 
     private void DeactivateLSDObjects()
     {
