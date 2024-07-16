@@ -1,143 +1,122 @@
 using System;
 using System.IO;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using Random = UnityEngine.Random;
+
 
 public class GameManager : MonoBehaviour
 {
+
+    // GameData Objects 
+    public GameObject gameData;
+    private GameData patchData; // Contains lists of float arrays // cange to gameDaat and gameDataObj as we only ref that once 
+
+    // Patch
+    private Patch patch;
+    private int trial;
+
     // GameObjects 
-    public Presentation Presentation; // script
     public LSD LSD;
-
-  
-    public GameObject presentation; // object 
+    public GameObject boxObj; // object 
     public GameObject fixationCross;
-    public GameObject canvas;
 
+    public GameObject leaveStayDecisionScreen;
+    public GameObject intertrialScreen;
 
-    // Temp for testing (patches) 
-    public float[] patch;
+    // Temp for testing (patches)
+    public float[] rewards;
     public float[] defaultPatch;
-
-    // Floats & Vara
-    private float reward;
-    private int eventNo = 0;
-    private float EVENTDISPLAYTIME = 2.0f;
 
     // Envs 
     private bool envB = true; // in the blue env
-    public bool inChoicePhase = false; 
-
-    // Data Persistance 
-    private string pathToLogs;
-
+    public bool inChoicePhase = false;
+    public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay 
 
     private void Awake()
     {
-       
-        // read in the patches from Marco's dataset here via an external script acting on GameData object
-        // read in the data then read in the patches in that script 
-        presentation.SetActive(false);
-        canvas.SetActive(false);
+        //set up refs to scripts 
+        patchData = gameData.GetComponent<GameData>(); //lists of patches (patches are arrays)
+        patch = GetComponent<Patch>();
+
+        boxObj.SetActive(false);
+        leaveStayDecisionScreen.SetActive(false);
+        intertrialScreen.SetActive(true);
+
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        patch = new float[] { 0.0f, 0.0f, 0.4f, 0.0f, 0f, 0f, 0.6f, 0f, 0f, 0f, 0.9f, 1.0f,0.0f,0.0f,1.0f, 0.0f };
-        defaultPatch = new float[] { 0.0f, 0.0f, 0.8f, 0.0f, 0f, 0f, 0.8f, 0f, 0f, 0f, 0.9f, 1.0f, 0.0f };
-
-        StartTask();
+        NextTrial();
     }
 
-    void StartTask()
+    public void NextTrial()
     {
+        trial = Random.Range(0, 89); // fix
+        Debug.Log(trial.ToString());
+        intertrialScreen.SetActive(true);
+        leave = null;
         envB = true;
-        StartPatch();
+        inChoicePhase = false;
+        StartCoroutine(WaitForInput());
     }
 
-    void StartPatch()
+    
+    private IEnumerator WaitForInput()
     {
-        eventNo = 0; 
-        StartCoroutine(InterEvent());
-    }
-
-    IEnumerator InterEvent()
-    {
-        fixationCross.SetActive(true);
         while (!Input.GetKeyDown(KeyCode.Space))
         {
             yield return null;
         }
-        NextEvent();
+        intertrialScreen.SetActive(false);
+        NextPatch();
     }
 
-    void NextEvent()
+    public void BeginChoicePhase()
     {
-        fixationCross.SetActive(false);
-        StartCoroutine(ShowPresentation());
+        inChoicePhase = true;
+        leaveStayDecisionScreen.SetActive(true);
+        LSD.ChoicePhase();
     }
 
-    IEnumerator ShowPresentation()
+    public void ClickedLeaveLSD()
     {
-        
-        presentation.SetActive(true);
-        if (envB)
+        leaveStayDecisionScreen.SetActive(false);
+        Debug.Log("Left");
+        inChoicePhase = false;
+        leave = true;
+        NextPatch();
+    }
+
+    public void ClickedStayLSD()
+    {
+        leaveStayDecisionScreen.SetActive(false);
+        Debug.Log("Stayed");
+        inChoicePhase = false;
+        leave = false;
+        NextPatch();
+
+    }
+
+
+    public void NextPatch() // in Patch Manager I hope; and we get the trial number via random selection. 
+    {
+        if (leave== null) {
+            envB = true;
+            rewards = patchData.rew2ld[trial];
+        } else if (leave == true)
         {
-            Presentation.SetBoxColour(Color.blue);
+            envB = false;
+            rewards = patchData.ldGo[trial];
+        } else if (leave == false)
+        {
+            envB = true;
+            rewards = patchData.ldStay[trial];
         }
-        else
-        {
-            Presentation.SetBoxColour(Color.red);
-        }
-
-        reward = patch[eventNo];
-        Presentation.SetBarHeight(reward);
-        yield return new WaitForSeconds(EVENTDISPLAYTIME);
-        EndEvent();
-    }
-
-    void EndEvent()
-    {
-        eventNo++;
-        presentation.SetActive(false);
-        bool endPatch = (eventNo == patch.Length);
-        if (endPatch)
-        {
-            inChoicePhase = true;
-            canvas.SetActive(true);
-            LSD.ChoicePhase();
-        } else
-        {
-            StartCoroutine(InterEvent());
-        }
-
-      
-    }
-
-
-    private void Update()
-    {
-        if (inChoicePhase)
-        {
-
-
-            // wait for choice, cathc the choices and reset inChoicePhase to decision made I guess. 
-        }
-    }
-
-
-    private void InitLogFile()
-    {
-        DateTime currentTime = DateTime.Now;
-        string fileName = currentTime.ToString("yyyy.MM.dd.HH.mm.ss");
-
-        pathToLogs = Application.persistentDataPath + "/" + fileName + ".txt";
-
-        using StreamWriter dataOut = File.CreateText(pathToLogs);
-        dataOut.WriteLine("Task Initialised at: " + DateTime.Now.ToString());
-        dataOut.WriteLine("CHOOSE WHAT TO READ OUT");
+        Debug.Log(string.Join(", ", rewards));
+        patch.StartPatch(rewards, envB);
     }
 
 }

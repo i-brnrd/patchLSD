@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Presentation : MonoBehaviour
+public class Box : MonoBehaviour
 {
     // Presentation Objects
     private SpriteRenderer box;
@@ -27,8 +27,6 @@ public class Presentation : MonoBehaviour
 
     public void SetBarHeight(float height)
     {
-        Debug.Log("In Bar Height");
-        Debug.Log(height);
         contentsMask.transform.localScale = new Vector3 (originalScale.x, originalScale.y * height, originalScale.z);
     }
 }

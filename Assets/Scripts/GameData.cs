@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,10 +9,14 @@ public class GameData : MonoBehaviour
     public TextAsset ldGoCSV;
 
     public List<float[]> rew2ld;
+    public List<float[]> ldStay;
+    public List<float[]> ldGo;
 
-    void Start()
+    private void Awake()
     {
-        rew2ld = LoadFromCSV(rew2ldCSV); 
+        rew2ld = LoadFromCSV(rew2ldCSV);
+        ldStay = LoadFromCSV(ldStayCSV);
+        ldGo = LoadFromCSV(ldGoCSV);
     }
 
     private List<float[]> LoadFromCSV(TextAsset csvFile)
@@ -23,8 +26,10 @@ public class GameData : MonoBehaviour
         // Split the file into lines
         string[] lines = csvFile.ToString().Split('\n');
 
-        foreach (var line in lines)
+        for (int lineIndex = 0; lineIndex < lines.Length -1; lineIndex++)
         {
+            string line = lines[lineIndex];
+
             // Split each line into values
             string[] values = line.Trim().Split(',');
             float[] floatLine = new float[values.Length];
@@ -37,6 +42,8 @@ public class GameData : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log(i);
+                    Debug.Log(lineIndex);
                     Debug.LogError("Failed to parse value: " + values[i]);
                 }
             }
@@ -47,6 +54,7 @@ public class GameData : MonoBehaviour
 
         return floatData;
     }
+
 
 
 }

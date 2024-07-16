@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class PatchManager : MonoBehaviour
 {
+    // GameData Objects 
+    public GameObject gameData;
+    private GameData patchData; // Contains lists of float arrays
+
+
+
+    public Patch patch;
+
     private int[,] patchSets;
     private bool[,] isUsed;
 
@@ -31,17 +39,26 @@ public class PatchManager : MonoBehaviour
 
     }
 
+
+    public void GetNextPatch()
+    {
+        // for now make it actually random
+
+    }
+
+    
+
     //// Start is called before the first frame update
     //void Start()
     //{
-        
+
     //}
 
     //// Update is called once per frame
     //void Update()
     //{
-        
-   
+
+
 
 }
 
