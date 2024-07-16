@@ -12,7 +12,7 @@ public class Patch : MonoBehaviour
     private float[] rewards;
     private bool blueEnv;
     private int eventCount = 0;
-    private readonly float EVENTDISPLAYTIME = 0.75f; // 2.0f
+    private readonly float EVENTDISPLAYTIME = 2.0f;
 
     // Start is called before the first frame update
     private void Awake()
