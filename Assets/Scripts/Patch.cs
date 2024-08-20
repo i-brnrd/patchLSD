@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class Patch : MonoBehaviour
 {
-    public GameManager gameManager;
+    //public GameManager gameManager;
+    private PatchManager patchManager;
 
     public GameObject BoxObj;
     private Box box;
@@ -12,18 +13,23 @@ public class Patch : MonoBehaviour
     private float[] rewards;
     private bool blueEnv;
     private int eventCount = 0;
-    private readonly float EVENTDISPLAYTIME = 2.0f;
+
+    private readonly float EVENTDISPLAYTIME = 0.8f; // as per Marco's task
+    Color myBlue = new Color(0f / 255f, 0f / 255f, 142f / 255f);
+    Color myRed = new Color(190f / 255f, 0f / 255f, 0f / 255f);
 
     // Start is called before the first frame update
     private void Awake()
     {
        box  = BoxObj.GetComponent<Box>();
+       patchManager= GetComponent<PatchManager>();
     }
 
     public void StartPatch(float[] patchArray, bool envB)
     {
         eventCount = 0;
         rewards = patchArray;
+        Debug.Log(rewards.Length);
         blueEnv = envB;
         StartCoroutine(InterEvent());
     }
@@ -51,11 +57,11 @@ public class Patch : MonoBehaviour
         BoxObj.SetActive(true);
         if (blueEnv)
         {
-            box.SetBoxColour(Color.blue);
+            box.SetBoxColour(myBlue);
         }
         else
         {
-            box.SetBoxColour(Color.red);
+            box.SetBoxColour(myRed);
         }
 
         reward = rewards[eventCount];
@@ -69,6 +75,9 @@ public class Patch : MonoBehaviour
         eventCount++;
         BoxObj.SetActive(false);
         bool endPatch = (eventCount == rewards.Length);
+        Debug.Log(rewards.Length);
+       // Debug.Log(eventCount);
+       // Debug.Log(endPatch);
         if (endPatch)
         {
             EndPatch();
@@ -82,12 +91,12 @@ public class Patch : MonoBehaviour
 
     private void EndPatch()
     {
-        if (gameManager.leave == null)
+        if (patchManager.leave == null)
         {
-            gameManager.BeginChoicePhase();
+            patchManager.BeginChoicePhase();
         } else
         {
-            gameManager.NextTrial();
+            patchManager.NextTrial();
         }
     }
 

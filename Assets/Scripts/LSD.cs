@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class LSD : MonoBehaviour
 {
     public GameManager gameManager;
+    private PatchManager patchManager;
 
     public GameObject questionMark;
     public GameObject leaveButton;
@@ -19,7 +20,7 @@ public class LSD : MonoBehaviour
 
     private void Awake()
     {
-        gameManager = gameManager.GetComponent<GameManager>();
+        patchManager = gameManager.GetComponent<PatchManager>();
         leftButtonPos = leaveButton.transform.localPosition; //grabbing positions 
         rightButtonPos = stayButton.transform.localPosition;
         originalColour = leaveButton.GetComponent<Button>().colors.normalColor;
@@ -77,10 +78,10 @@ public class LSD : MonoBehaviour
 
         if (isLeave)
         {
-            gameManager.ClickedLeaveLSD();
+            patchManager.ClickedLeaveLSD();
         } else
         {
-            gameManager.ClickedStayLSD();
+            patchManager.ClickedStayLSD();
         }
         // Call the method on another script
 

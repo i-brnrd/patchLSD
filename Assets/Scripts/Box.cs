@@ -14,8 +14,9 @@ public class Box : MonoBehaviour
     // setup refs to the environment (colour) & contents (gold bars) 
     private void Awake()
     {
-        contentsMask = gameObject.transform.Find("Contents").gameObject;
         environment = gameObject.transform.Find("Environment").gameObject;
+        contentsMask = gameObject.transform.Find("Contents").gameObject;
+
         box = environment.GetComponent<SpriteRenderer>();
         originalScale = contentsMask.transform.localScale;
     }
