@@ -35,11 +35,6 @@ public class PatchManager : MonoBehaviour
 
     }
 
-    public void StartTrainingA()
-    {
-        Debug.Log("training A");
-    }
-
     public void StartTask()
     {
         StartCoroutine(Task());
@@ -72,7 +67,7 @@ public class PatchManager : MonoBehaviour
             }
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial("Completed Trial " + count.ToString()));
+            yield return StartCoroutine(Intertrial("Completed Trial " + (count+1).ToString()));
             count++;
         
         }
@@ -133,6 +128,34 @@ public class PatchManager : MonoBehaviour
     {
         leaveStayDecisionScreen.SetActive(false);
         leave = false;
+    }
+
+
+    public void StartTrainingA()
+    {
+        StartCoroutine(TrainingA());
+    }
+
+    private IEnumerator TrainingA()
+    {
+        int count = 0;
+        yield return StartCoroutine(Intertrial("Start of Training (a)"));
+
+        while (count < 10)
+        {
+            trial = Random.Range(0, 89); // fix
+
+            leave = null;
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(Intertrial());
+            leave = true;
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(Intertrial());
+            count++;
+        }
+
     }
 
 }

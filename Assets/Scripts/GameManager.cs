@@ -49,16 +49,11 @@ public class GameManager : MonoBehaviour
 
     }
 
-    // idea is that PatchManager will be called upon to
-    // manage the patches based upon the setting
-
-    // I think choice phase needs to be in there too actually
-    // MAanging setup of te patches and c
 
     private void Start()
     {
-        patchManager.StartTask();
-
+        //patchManager.StartTask();
+        patchManager.StartTrainingA();
     }
 
   
