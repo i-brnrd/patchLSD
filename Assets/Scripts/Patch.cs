@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class Patch : MonoBehaviour
 {
-    //public GameManager gameManager;
     private PatchManager patchManager;
 
     public GameObject BoxObj;
@@ -76,8 +75,7 @@ public class Patch : MonoBehaviour
         BoxObj.SetActive(false);
         bool endPatch = (eventCount == rewards.Length);
         Debug.Log(rewards.Length);
-       // Debug.Log(eventCount);
-       // Debug.Log(endPatch);
+
         if (endPatch)
         {
             EndPatch();
@@ -89,15 +87,6 @@ public class Patch : MonoBehaviour
 
     }
 
-    private void EndPatch()
-    {
-        if (patchManager.leave == null)
-        {
-            patchManager.BeginChoicePhase();
-        } else
-        {
-            patchManager.NextTrial();
-        }
-    }
+ 
 
 }

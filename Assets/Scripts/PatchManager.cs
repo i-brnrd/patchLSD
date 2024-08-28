@@ -1,13 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PatchManager : MonoBehaviour
 {
     // GameData Objects 
     public GameObject gameData;
-    private GameData patchData; // Contains lists of float arrays
-                                // GameData Objects 
+    private GameData patchData;
+
     // Patch
     private Patch patch;
     private int trial;
@@ -24,9 +23,10 @@ public class PatchManager : MonoBehaviour
     public float[] rewards;
     public float[] defaultPatch;
 
-    // Envs 
-    private bool envB = true; // in the blue env
-    public bool inChoicePhase = false;
+    // Environment Vats 
+    private bool envB = true; // in the blue (default) environment
+    // LSD vars 
+    public bool inChoicePhase = false; //choice phase 
     public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay 
 
     private int[,] patchSets;
@@ -35,17 +35,14 @@ public class PatchManager : MonoBehaviour
     private int nSets = 18;
     private int nPatches = 5; //per set 
 
+    // deal with this, is important 
     private int availableSets = 5;
 
     private void Awake()
     {
-        //set up refs to scripts 
+        //set up references to scripts & objects 
         patchData = gameData.GetComponent<GameData>(); //lists of patches (patches are arrays)
         patch = GetComponent<Patch>();
-
-        boxObj.SetActive(false);
-        leaveStayDecisionScreen.SetActive(false);
-        intertrialScreen.SetActive(true);
 
     }
 
@@ -53,6 +50,21 @@ public class PatchManager : MonoBehaviour
     {
         Debug.Log("hello I am a task");
         NextTrial();
+
+        // get 
+    }
+
+    public void StartTraining()
+    {
+        Debug.Log("hello I am a training");
+        // whats a training patch going to look like 
+        // get a training patch & run it
+        // end of blue patch 
+        // get a defaul patch and run it
+        // end of red patch 
+        // repeat that like 3 times
+        // training completed - I think i need a Show Message thing 
+
     }
 
     public void NextTrial()
@@ -152,18 +164,7 @@ public class PatchManager : MonoBehaviour
 
     }
 
-    
-
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-
-    //}
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-
+   
 
 
 }
