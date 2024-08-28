@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class PatchManager : MonoBehaviour
@@ -15,22 +16,16 @@ public class PatchManager : MonoBehaviour
     public LSD LSD;
     public GameObject boxObj; // object 
     public GameObject fixationCross;
-
     public GameObject leaveStayDecisionScreen;
     public GameObject intertrialScreen;
+    public TMP_Text optionalText;
 
-    // Temp for testing (patches)
     public float[] rewards;
-    public float[] defaultPatch;
-
-    // Environment Vats 
     private bool envB = true; // in the blue (default) environment
     // LSD vars 
     public bool inChoicePhase = false; //choice phase 
     public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay 
 
-   
-    private int counter = 0;
 
     private void Awake()
     {
@@ -40,39 +35,69 @@ public class PatchManager : MonoBehaviour
 
     }
 
+    public void StartTrainingA()
+    {
+        Debug.Log("training A");
+    }
+
     public void StartTask()
     {
-        NextTrial();
+        StartCoroutine(Task());
     }
 
- 
-    public void NextTrial()
+    private IEnumerator Task()
     {
-        trial = Random.Range(0, 89); // fix
-        counter = counter + 1;
-        Debug.Log(trial.ToString());
+        int count = 0;
+        yield return StartCoroutine(Intertrial("Start of Task"));
+        while (count < 90) {
+
+            leave = null; 
+            trial = Random.Range(0, 89); // fix
+            SetPatch(); // takes in leave & returns env
+            Debug.Log(envB.ToString() + trial.ToString() + count.ToString());
+
+           
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+
+            // After the patch is complete, decide what to do next
+            if (leave == null)
+            {
+                BeginChoicePhase();
+
+                while (leave == null)
+                {
+                    yield return null;
+                }
+
+            }
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(Intertrial("Completed Trial " + count.ToString()));
+            count++;
+        
+        }
+
+    }
+
+    private IEnumerator Intertrial(string displayMessage = null)
+    {
+        if (!string.IsNullOrEmpty(displayMessage)) {
+            Debug.Log(displayMessage);
+            optionalText.text = displayMessage;
+        } else
+        {
+            optionalText.text = " ";
+        }
+        Debug.Log(optionalText);
         intertrialScreen.SetActive(true);
-        leave = null;
-        envB = true;
-        inChoicePhase = false;
-        StartCoroutine(WaitForInput());
-    }
-
-
-    private IEnumerator WaitForInput()
-    {
-
         while (!Input.GetKeyDown(KeyCode.Space))
         {
             yield return null;
         }
         intertrialScreen.SetActive(false);
-
-        NextPatch();
     }
 
-
-    public void NextPatch() // in Patch Manager I hope; and we get the trial number via random selection. 
+    public void SetPatch()
     {
         if (leave == null)
         {
@@ -89,35 +114,7 @@ public class PatchManager : MonoBehaviour
             envB = true;
             rewards = patchData.ldStay[trial];
         }
-        Debug.Log(string.Join(", ", rewards));
-        Debug.Log(rewards.Length);
-        StartCoroutine(StartPatchCoroutine());
-        Debug.Log("Counter " + counter.ToString());
     }
-
-    private IEnumerator StartPatchCoroutine()
-    {
-        Debug.Log("In StartPatchCoroutine");
-
-        Debug.Log(rewards);
-        Debug.Log(envB);
-        // Start the patch and wait until it is complete
-        yield return StartCoroutine(patch.StartPatch(rewards, envB));
-
-        Debug.Log("after StartCoroutine");
-
-        // After the patch is complete, decide what to do next
-        if (leave == null)
-        {
-            BeginChoicePhase();
-        }
-        else
-        {
-            NextTrial();
-        }
-    }
-
-
 
     public void BeginChoicePhase()
     {
@@ -129,20 +126,13 @@ public class PatchManager : MonoBehaviour
     public void ClickedLeaveLSD()
     {
         leaveStayDecisionScreen.SetActive(false);
-        Debug.Log("Left");
-        inChoicePhase = false;
         leave = true;
-        NextPatch();
     }
 
     public void ClickedStayLSD()
     {
         leaveStayDecisionScreen.SetActive(false);
-        Debug.Log("Stayed");
-        inChoicePhase = false;
         leave = false;
-        NextPatch();
-
     }
 
 }
