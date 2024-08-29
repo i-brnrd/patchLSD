@@ -52,8 +52,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        //patchManager.StartTask();
-        patchManager.StartTrainingA();
+        patchManager.StartTask();
+        //patchManager.StartTrainingA();
     }
 
   
