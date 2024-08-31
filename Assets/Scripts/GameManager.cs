@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameData;
     private GameData patchData; // Contains lists of float arrays // cange to gameDaat and gameDataObj as we only ref that once 
 
+    public GameObject startScreen;
 
     // Patch
     private PatchManager patchManager;
@@ -49,28 +50,34 @@ public class GameManager : MonoBehaviour
 
     }
 
+    // need to block all input apart from cliks/ presses in game start screen
+    // make a mob friendly tap to spacebar 
 
     private void Start()
     {
-        patchManager.StartTask();
+        //patchManager.StartTask();
         //patchManager.StartTrainingA();
     }
 
   
-    private void PressedTrainingA()
+    public void PressedTrainingA()
     {
         Debug.Log("Pressed A");
     }
 
 
-    private void PressedTrainingB()
+    public void PressedTrainingB()
     {
         Debug.Log("Pressed B");
     }
 
-    private void PressedTrainingC()
+    public void PressedTrainingC()
     {
-        Debug.Log("Pressed C");
+        Debug.Log("Pressed C"); 
     }
 
+    public void PressedRunTask()
+    {
+        Debug.Log("Pressed Run Task");
+    }
 }
