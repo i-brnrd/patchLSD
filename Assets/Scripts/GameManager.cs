@@ -57,6 +57,20 @@ public class GameManager : MonoBehaviour
     }
 
   
-    
+    private void PressedTrainingA()
+    {
+        Debug.Log("Pressed A");
+    }
+
+
+    private void PressedTrainingB()
+    {
+        Debug.Log("Pressed B");
+    }
+
+    private void PressedTrainingC()
+    {
+        Debug.Log("Pressed C");
+    }
 
 }
