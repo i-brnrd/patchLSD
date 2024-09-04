@@ -38,46 +38,51 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        //set up refs to scripts 
-        //patchData = gameData.GetComponent<GameData>(); //lists of patches (patches are arrays)
-        //patch = GetComponent<Patch>();
-
         patchManager = GetComponent<PatchManager>();
-
         boxObj.SetActive(false);
         leaveStayDecisionScreen.SetActive(false);
-        intertrialScreen.SetActive(true);
 
     }
 
-    // need to block all input apart from cliks/ presses in game start screen
-    // make a mob friendly tap to spacebar 
+    // need to block all input apart from clicks/ presses in game start screen
+    // make a mob friendly tap as a spacebar alternative 
 
     private void Start()
     {
-        //patchManager.StartTask();
-        //patchManager.StartTrainingA();
+        startScreen.SetActive(true);
     }
 
-  
     public void PressedTrainingA()
     {
+        startScreen.SetActive(false);
         Debug.Log("Pressed A");
-    }
+        patchManager.StartTrainingA();
 
+    }
 
     public void PressedTrainingB()
     {
+        startScreen.SetActive(false);
         Debug.Log("Pressed B");
+        patchManager.StartTrainingB();
     }
 
     public void PressedTrainingC()
     {
-        Debug.Log("Pressed C"); 
+        startScreen.SetActive(false);
+        Debug.Log("Pressed C");
+        patchManager.StartTrainingC();
     }
 
     public void PressedRunTask()
     {
+        startScreen.SetActive(false);
         Debug.Log("Pressed Run Task");
+        patchManager.StartTask();
+    }
+
+    public void EndSession()
+    {
+        startScreen.SetActive(true);
     }
 }

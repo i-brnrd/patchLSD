@@ -20,9 +20,11 @@ public class PatchManager : MonoBehaviour
     public GameObject intertrialScreen;
     public TMP_Text optionalText;
 
+    private GameManager gameManager;
+   
+
     public float[] rewards;
     private bool envB = true; // in the blue (default) environment
-    // LSD vars 
     public bool inChoicePhase = false; //choice phase 
     public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay 
 
@@ -32,7 +34,7 @@ public class PatchManager : MonoBehaviour
         //set up references to scripts & objects 
         patchData = gameData.GetComponent<GameData>(); //lists of patches (patches are arrays)
         patch = GetComponent<Patch>();
-
+        gameManager = GetComponent<GameManager>();
     }
 
     public void StartTask()
@@ -45,13 +47,10 @@ public class PatchManager : MonoBehaviour
         int count = 0;
         yield return StartCoroutine(Intertrial("Start of Task"));
         while (count < 90) {
-
             leave = null; 
             trial = Random.Range(0, 89); // fix
             SetPatch(); // takes in leave & returns env
-            Debug.Log(envB.ToString() + trial.ToString() + count.ToString());
-
-           
+            Debug.Log(envB.ToString() + trial.ToString() + count.ToString()); 
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
 
             // After the patch is complete, decide what to do next
@@ -71,8 +70,133 @@ public class PatchManager : MonoBehaviour
             count++;
         
         }
+        yield return new WaitForSeconds(0.1f);
+        yield return StartCoroutine(Intertrial("End of Task"));
+        yield return new WaitForSeconds(0.1f);
+        gameManager.EndSession();
+
 
     }
+
+    public void StartTrainingA()
+    {
+        StartCoroutine(TrainingA());
+    }
+
+    private IEnumerator TrainingA()
+    {
+        int count = 0;
+
+        while (count < 1)
+        {
+            if (count == 0)
+            {
+                yield return StartCoroutine(Intertrial("Start of Training (A)"));
+            } else
+            {
+                yield return StartCoroutine(Intertrial());
+            }
+            trial = Random.Range(0, 89); // fix
+
+            leave = null;
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(Intertrial());
+            leave = true;
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+           
+            count++;
+        }
+
+        Debug.Log("end");
+        yield return new WaitForSeconds(0.1f);
+        yield return StartCoroutine(Intertrial("End of Training (A)"));
+        yield return new WaitForSeconds(0.1f);
+        gameManager.EndSession();
+
+    }
+
+    public void StartTrainingB()
+    {
+        StartCoroutine(TrainingB());
+    }
+
+
+    private IEnumerator TrainingB()
+    {
+        int count = 0;
+
+        while (count < 10)
+        {
+            if (count == 0)
+            {
+                yield return StartCoroutine(Intertrial("Start of Training (B)"));
+            }
+            else
+            {
+                yield return StartCoroutine(Intertrial());
+            }
+            trial = Random.Range(0, 89); // fix
+
+            leave = null;
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(Intertrial());
+            leave = true;
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            count++;
+        }
+        yield return new WaitForSeconds(0.1f);
+        yield return StartCoroutine(Intertrial("End of Training (B)"));
+        yield return new WaitForSeconds(0.1f);
+        gameManager.EndSession();
+
+    }
+
+    public void StartTrainingC()
+    {
+        StartCoroutine(TrainingC());
+    }
+
+
+    private IEnumerator TrainingC()
+    {
+        int count = 0;
+
+        while (count < 10)
+        {
+            if (count == 0)
+            {
+                yield return StartCoroutine(Intertrial("Start of Training (C)"));
+            }
+            else
+            {
+                yield return StartCoroutine(Intertrial());
+            }
+            trial = Random.Range(0, 89); // fix
+
+            leave = null;
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(Intertrial());
+            leave = true;
+            SetPatch();
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(Intertrial());
+            count++;
+        }
+        yield return new WaitForSeconds(0.1f);
+        yield return StartCoroutine(Intertrial("End of Training (C)"));
+        yield return new WaitForSeconds(0.1f);
+        gameManager.EndSession();
+
+    }
+
+
+    // Patch Manager Utils
+    
 
     private IEnumerator Intertrial(string displayMessage = null)
     {
@@ -83,7 +207,6 @@ public class PatchManager : MonoBehaviour
         {
             optionalText.text = " ";
         }
-        Debug.Log(optionalText);
         intertrialScreen.SetActive(true);
         while (!Input.GetKeyDown(KeyCode.Space))
         {
@@ -128,84 +251,11 @@ public class PatchManager : MonoBehaviour
     {
         leaveStayDecisionScreen.SetActive(false);
         leave = false;
-    }
-
-
-    public void StartTrainingA()
-    {
-        StartCoroutine(TrainingA());
-    }
-
-    private IEnumerator TrainingA()
-    {
-        int count = 0;
-        yield return StartCoroutine(Intertrial("Start of Training (a)"));
-
-        while (count < 10)
-        {
-            trial = Random.Range(0, 89); // fix
-
-            leave = null;
-            SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial());
-            leave = true;
-            SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial());
-            count++;
-        }
-
-    }
+    }  
 
 }
 
 
-////these will all be public 
-//private int[,] patchSets;
-//private bool[,] isUsed;
-
-//private int nSets = 18;
-//private int nPatches = 5; //per set 
-
-//// deal with this, is important 
-//private int availableSets = 5;
-
-//public void InitPatchIdx()
-//{
-//    // load in the actual patches elsewhere
-//    // patchSets keeps track of the Row Number of each Patch in the correct index. 
-//    for (int i = 0; i < nSets; i++)
-//    {
-//        for (int j = 0; j < nPatches; j++)
-//        {
-//            patchSets[i, j] = i * nSets + j;
-//            isUsed[i, j] = false;
-//        }
-//    }
-
-
-//}
-
-
-//public void GetNextPatch()
-//{
-//    // for now make it actually random
-
-//}
-
-//public void StartTraining()
-//{
-//    Debug.Log("hello I am a training");
-//    // whats a training patch going to look like 
-//    // get a training patch & run it
-//    // end of blue patch 
-//    // get a defaul patch and run it
-//    // end of red patch 
-//    // repeat that like 3 times
-//    // training completed - I think i need a Show Message thing 
-
-//}
 
 
 
