@@ -19,6 +19,7 @@ public class PatchManager : MonoBehaviour
     public GameObject leaveStayDecisionScreen;
     public GameObject intertrialScreen;
     public TMP_Text optionalText;
+    public TMP_Text continueText;
 
     private GameManager gameManager;
    
@@ -87,16 +88,18 @@ public class PatchManager : MonoBehaviour
     {
         int count = 0;
 
-        while (count < 1)
+        int[] trialsA = { 39, 42, 86, 27, 65, 18, 76, 4, 13, 53 }; //matlab 1 based indexing
+
+        while (count < trialsA.Length)
         {
             if (count == 0)
             {
-                yield return StartCoroutine(Intertrial("Start of Training (A)"));
+                yield return StartCoroutine(Intertrial("Start of Training (A)", 0.5f));
             } else
             {
                 yield return StartCoroutine(Intertrial());
             }
-            trial = Random.Range(0, 89); // fix
+            trial = trialsA[count] -1; //c# 0 based 
 
             leave = null;
             SetPatch();
@@ -111,7 +114,7 @@ public class PatchManager : MonoBehaviour
 
         Debug.Log("end");
         yield return new WaitForSeconds(0.1f);
-        yield return StartCoroutine(Intertrial("End of Training (A)"));
+        yield return StartCoroutine(Intertrial("End of Training (A)", 0.5f));
         yield return new WaitForSeconds(0.1f);
         gameManager.EndSession();
 
@@ -125,29 +128,44 @@ public class PatchManager : MonoBehaviour
 
     private IEnumerator TrainingB()
     {
-        int count = 0;
+        int[] trialsB = { 7, 41, 81};
 
-        while (count < 10)
+        int nSets = 3;
+        int setCount = 0;
+
+        while (setCount < nSets)
         {
-            if (count == 0)
-            {
-                yield return StartCoroutine(Intertrial("Start of Training (B)"));
-            }
-            else
-            {
-                yield return StartCoroutine(Intertrial());
-            }
-            trial = Random.Range(0, 89); // fix
+            yield return StartCoroutine(Intertrial($"Start of Training (B) Set {setCount + 1}"));
 
-            leave = null;
-            SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial());
-            leave = true;
-            SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            count++;
+            for (int i = 0; i < trialsB.Length; i++)
+            {
+                Debug.Log("Set Count " + setCount.ToString() + " tB idx " + i.ToString() + "tB len" + trialsB.Length.ToString());
+                Debug.Log((trialsB[i] - 1).ToString());
+                if (i != 0)
+                {
+                    yield return StartCoroutine(Intertrial("End of Patch", 0.5f));  // Regular intertrial
+                }
+                // Get the trial idx 
+                
+                trial = trialsB[i]-1;
+            
+                leave = null;
+                SetPatch();
+                yield return StartCoroutine(patch.StartPatch(rewards, envB));
+                leave = false;
+                SetPatch();
+                yield return StartCoroutine(patch.StartPatch(rewards, envB));
+                Debug.Log("Set Count " + setCount.ToString() + " tB idx " + i.ToString());
+            }
+
+            if (setCount < nSets - 1)
+            {
+                yield return StartCoroutine(Intertrial($"Set {setCount + 1} Complete"));
+            }
+
+            setCount++; // Increment the set counter
         }
+
         yield return new WaitForSeconds(0.1f);
         yield return StartCoroutine(Intertrial("End of Training (B)"));
         yield return new WaitForSeconds(0.1f);
@@ -164,41 +182,52 @@ public class PatchManager : MonoBehaviour
     private IEnumerator TrainingC()
     {
         int count = 0;
-
-        while (count < 10)
+        int[] trialsC = { 55, 80, 20, 40, 60, 0, 35, 15, 10, 70, 5, 50, 85, 45, 25, 75, 30, 65 };
+        
+        while (count< trialsC.Length)
         {
             if (count == 0)
             {
-                yield return StartCoroutine(Intertrial("Start of Training (C)"));
+                yield return StartCoroutine(Intertrial("Start of Training (C)", 0.5f));
             }
             else
             {
                 yield return StartCoroutine(Intertrial());
             }
-            trial = Random.Range(0, 89); // fix
-
+            trial = trialsC[count];
             leave = null;
+            SetPatch(); // takes in leave & returns env
+            Debug.Log(envB.ToString() + trial.ToString() + count.ToString());
+            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+
+            // After the patch is complete, decide what to do next
+            if (leave == null)
+            {
+                BeginChoicePhase();
+
+                while (leave == null)
+                {
+                    yield return null;
+                }
+
+            }
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial());
-            leave = true;
-            SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial());
+            yield return StartCoroutine(Intertrial("Completed Trial " + (count + 1).ToString()+ " XX Points", 0.5f));
             count++;
+
         }
         yield return new WaitForSeconds(0.1f);
-        yield return StartCoroutine(Intertrial("End of Training (C)"));
+        yield return StartCoroutine(Intertrial("End of Training (C)", 0.5f));
         yield return new WaitForSeconds(0.1f);
         gameManager.EndSession();
-
     }
 
 
     // Patch Manager Utils
     
 
-    private IEnumerator Intertrial(string displayMessage = null)
+    private IEnumerator Intertrial(string displayMessage = null, float delay = 0f)
     {
         if (!string.IsNullOrEmpty(displayMessage)) {
             Debug.Log(displayMessage);
@@ -208,6 +237,16 @@ public class PatchManager : MonoBehaviour
             optionalText.text = " ";
         }
         intertrialScreen.SetActive(true);
+        continueText.gameObject.SetActive(false);
+
+        // Optional delay before showing the continueText
+        if (delay > 0f)
+        {
+            yield return new WaitForSeconds(delay);
+        }
+
+        continueText.gameObject.SetActive(true);
+
         while (!Input.GetKeyDown(KeyCode.Space))
         {
             yield return null;

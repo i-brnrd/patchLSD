@@ -189,8 +189,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -0.18244982, y: 0.6289501, z: 0}
-    m_Extent: {x: 8.60545, y: 8.35635, z: 0}
+    m_Center: {x: -0.18145037, y: 0.6291001, z: 0}
+    m_Extent: {x: 8.6060505, y: 8.357, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -375,8 +375,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 1.4581001, y: 1.1826, z: 0}
-    m_Extent: {x: 6.4587, y: 7.1285, z: 0}
+    m_Center: {x: 1.4590499, y: 1.1821499, z: 0}
+    m_Extent: {x: 6.4593496, y: 7.12815, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -459,7 +459,7 @@ RectTransform:
   m_Father: {fileID: 48373615}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -475,7 +475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 4
+  m_AspectMode: 1
   m_AspectRatio: 1
 --- !u!1 &270972776
 GameObject:
@@ -636,6 +636,7 @@ MonoBehaviour:
   leaveStayDecisionScreen: {fileID: 1234820596}
   intertrialScreen: {fileID: 1227706539}
   optionalText: {fileID: 989376378}
+  continueText: {fileID: 1511561464}
   rewards: []
   inChoicePhase: 0
 --- !u!114 &305056126
@@ -718,8 +719,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -2.5951998, y: 1.354, z: 0}
-    m_Extent: {x: 8.7494, y: 4.1017, z: 0}
+    m_Center: {x: -2.59595, y: 1.3538499, z: 0}
+    m_Extent: {x: 8.74955, y: 4.10145, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1022,8 +1023,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -0.0036501884, y: 0.24780011, z: 0}
-    m_Extent: {x: 4.24435, y: 5.0803003, z: 0}
+    m_Center: {x: -0.004400015, y: 0.24825001, z: 0}
+    m_Extent: {x: 4.2443, y: 5.08055, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -2520,7 +2521,7 @@ RectTransform:
   m_Father: {fileID: 48373615}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2536,7 +2537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 4
+  m_AspectMode: 1
   m_AspectRatio: 1
 --- !u!1 &1234820596
 GameObject:
@@ -2575,7 +2576,7 @@ RectTransform:
   m_Father: {fileID: 48373615}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2591,7 +2592,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 4
+  m_AspectMode: 1
   m_AspectRatio: 1
 --- !u!114 &1234820599
 MonoBehaviour:
@@ -3399,7 +3400,7 @@ GameObject:
   - component: {fileID: 1511561465}
   - component: {fileID: 1511561464}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ContinueText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
