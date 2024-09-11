@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using System.Linq;
 
 public class PatchManager : MonoBehaviour
 {
@@ -22,7 +23,8 @@ public class PatchManager : MonoBehaviour
     public TMP_Text continueText;
 
     private GameManager gameManager;
-   
+
+    private PatchUtilities patchUtils;
 
     public float[] rewards;
     private bool envB = true; // in the blue (default) environment
@@ -32,10 +34,16 @@ public class PatchManager : MonoBehaviour
 
     private void Awake()
     {
-        //set up references to scripts & objects 
+        //set up references to scripts & objects
+        gameManager = GetComponent<GameManager>();
+
         patchData = gameData.GetComponent<GameData>(); //lists of patches (patches are arrays)
         patch = GetComponent<Patch>();
-        gameManager = GetComponent<GameManager>();
+
+        patchUtils = GetComponent<PatchUtilities>();
+        
+
+
     }
 
     public void StartTask()
@@ -51,32 +59,23 @@ public class PatchManager : MonoBehaviour
             leave = null; 
             trial = Random.Range(0, 89); // fix
             SetPatch(); // takes in leave & returns env
-            Debug.Log(envB.ToString() + trial.ToString() + count.ToString()); 
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
 
-            // After the patch is complete, decide what to do next
             if (leave == null)
             {
                 BeginChoicePhase();
-
                 while (leave == null)
                 {
                     yield return null;
                 }
-
             }
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial("Completed Trial " + (count+1).ToString()));
+            yield return StartCoroutine(Intertrial("Completed Trial " + (count+1).ToString(), 0.3f));
             count++;
         
         }
-        yield return new WaitForSeconds(0.1f);
-        yield return StartCoroutine(Intertrial("End of Task"));
-        yield return new WaitForSeconds(0.1f);
-        gameManager.EndSession();
-
-
+       StartCoroutine(EndSession("End of Task"));
     }
 
     public void StartTrainingA()
@@ -88,7 +87,7 @@ public class PatchManager : MonoBehaviour
     {
         int count = 0;
 
-        int[] trialsA = { 39, 42, 86, 27, 65, 18, 76, 4, 13, 53 }; //matlab 1 based indexing
+        int[] trialsA = { 18, 42, 86, 27, 65, 39, 76, 4, 13, 53 }; //matlab 1 based indexing
 
         while (count < trialsA.Length)
         {
@@ -112,11 +111,7 @@ public class PatchManager : MonoBehaviour
             count++;
         }
 
-        Debug.Log("end");
-        yield return new WaitForSeconds(0.1f);
-        yield return StartCoroutine(Intertrial("End of Training (A)", 0.5f));
-        yield return new WaitForSeconds(0.1f);
-        gameManager.EndSession();
+        StartCoroutine(EndSession("End of Training (A)"));
 
     }
 
@@ -139,13 +134,10 @@ public class PatchManager : MonoBehaviour
 
             for (int i = 0; i < trialsB.Length; i++)
             {
-                Debug.Log("Set Count " + setCount.ToString() + " tB idx " + i.ToString() + "tB len" + trialsB.Length.ToString());
-                Debug.Log((trialsB[i] - 1).ToString());
                 if (i != 0)
                 {
                     yield return StartCoroutine(Intertrial("End of Patch", 0.5f));  // Regular intertrial
                 }
-                // Get the trial idx 
                 
                 trial = trialsB[i]-1;
             
@@ -165,12 +157,7 @@ public class PatchManager : MonoBehaviour
 
             setCount++; // Increment the set counter
         }
-
-        yield return new WaitForSeconds(0.1f);
-        yield return StartCoroutine(Intertrial("End of Training (B)"));
-        yield return new WaitForSeconds(0.1f);
-        gameManager.EndSession();
-
+        StartCoroutine(EndSession("End of Training (B)"));
     }
 
     public void StartTrainingC()
@@ -213,18 +200,51 @@ public class PatchManager : MonoBehaviour
             }
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial("Completed Trial " + (count + 1).ToString()+ " XX Points", 0.5f));
+
+            //yield return StartCoroutine(Intertrial("Completed Trial " + (count + 1).ToString()+ " XX Points", 0.5f));
+            yield return StartCoroutine(ShowPointsC(count, trial, leave));
             count++;
 
         }
-        yield return new WaitForSeconds(0.1f);
-        yield return StartCoroutine(Intertrial("End of Training (C)", 0.5f));
-        yield return new WaitForSeconds(0.1f);
-        gameManager.EndSession();
+        StartCoroutine(EndSession("End of Training (C)"));
     }
 
 
-    // Patch Manager Utils
+    // Patch Manager Utils (move to patchUtils)
+    
+    // Show Points isn't the same as for the task though, what do we want to display? 
+
+    private IEnumerator ShowPointsC(int count, int trial, bool? leave)
+    {
+        float ldGoSum = patchData.ldGo[trial].Sum();
+        float ldStaySum = patchData.ldStay[trial].Sum();
+
+        float points = 0.0f;
+
+        if (leave==true) {
+
+            points = ldGoSum - ldStaySum; 
+
+        } else
+        {
+            points = ldStaySum - ldGoSum;
+        }
+
+        int pointsAsInt = Mathf.RoundToInt(points * 100);
+
+        // Return the sum of both arrays and display points in the message
+        yield return StartCoroutine(Intertrial($"Completed Trial {count + 1}: Bonus Points {pointsAsInt} Points", 0.5f));
+    }
+
+    
+
+    private IEnumerator EndSession(string displayMessage = null)
+    {
+        yield return new WaitForSeconds(0.1f);
+        yield return StartCoroutine(Intertrial(displayMessage, 0.5f));
+        yield return new WaitForSeconds(0.1f);
+        gameManager.EndSession();
+    }
     
 
     private IEnumerator Intertrial(string displayMessage = null, float delay = 0f)

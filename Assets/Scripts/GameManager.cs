@@ -1,9 +1,6 @@
+using UnityEngine;
 using System;
 using System.IO;
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using Random = UnityEngine.Random;
 
 
 public class GameManager : MonoBehaviour
@@ -11,14 +8,11 @@ public class GameManager : MonoBehaviour
 
     // GameData Objects 
     public GameObject gameData;
-    private GameData patchData; // Contains lists of float arrays // cange to gameDaat and gameDataObj as we only ref that once 
 
     public GameObject startScreen;
 
     // Patch
     private PatchManager patchManager;
-    private Patch patch;
-    private int trial;
 
     // GameObjects 
     public LSD LSD;
@@ -34,7 +28,9 @@ public class GameManager : MonoBehaviour
 
     // Envs 
     public bool inChoicePhase = false;
-    public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay 
+    public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay
+
+    public string pathToLog;
 
     private void Awake()
     {
@@ -44,40 +40,61 @@ public class GameManager : MonoBehaviour
 
     }
 
+
+    private void InitLogFile()
+    {
+        DateTime currentTime = DateTime.Now;
+        string fileName = currentTime.ToString("yyyy.MM.dd.HH.mm.ss");
+
+        pathToLog = Application.persistentDataPath + "/" + fileName + ".txt";
+
+        using StreamWriter dataOut = File.CreateText(pathToLog);
+        dataOut.WriteLine("Task Initialised at: " + DateTime.Now.ToString());
+        dataOut.WriteLine("Trial Number, Reward, Response Time, Response Chosen");
+    }
+
+
     // need to block all input apart from clicks/ presses in game start screen
     // make a mob friendly tap as a spacebar alternative 
 
     private void Start()
     {
+        InitLogFile();
         startScreen.SetActive(true);
     }
 
     public void PressedTrainingA()
+
     {
+        using StreamWriter dataOut = File.AppendText(pathToLog);
+        dataOut.WriteLine("Training A; no decisions recorded " + DateTime.Now.ToString());
+
         startScreen.SetActive(false);
-        Debug.Log("Pressed A");
         patchManager.StartTrainingA();
 
     }
 
     public void PressedTrainingB()
     {
+        using StreamWriter dataOut = File.AppendText(pathToLog);
+        dataOut.WriteLine("Training B; no decisions recorded " + DateTime.Now.ToString());
+
         startScreen.SetActive(false);
-        Debug.Log("Pressed B");
         patchManager.StartTrainingB();
     }
 
     public void PressedTrainingC()
     {
+        using StreamWriter dataOut = File.AppendText(pathToLog);
+        dataOut.WriteLine("Training C" + DateTime.Now.ToString());
+
         startScreen.SetActive(false);
-        Debug.Log("Pressed C");
         patchManager.StartTrainingC();
     }
 
     public void PressedRunTask()
     {
         startScreen.SetActive(false);
-        Debug.Log("Pressed Run Task");
         patchManager.StartTask();
     }
 
