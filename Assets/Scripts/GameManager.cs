@@ -48,9 +48,11 @@ public class GameManager : MonoBehaviour
 
         pathToLog = Application.persistentDataPath + "/" + fileName + ".txt";
 
+        Debug.Log(pathToLog);
+
         using StreamWriter dataOut = File.CreateText(pathToLog);
         dataOut.WriteLine("Task Initialised at: " + DateTime.Now.ToString());
-        dataOut.WriteLine("Trial Number, Reward, Response Time, Response Chosen");
+        dataOut.WriteLine("Trial, Leave?(bool) - anything else?");
     }
 
 
@@ -102,4 +104,14 @@ public class GameManager : MonoBehaviour
     {
         startScreen.SetActive(true);
     }
+
+
+    public void SaveData(string[] stringToSave)
+    {
+        string dataToWrite = string.Join(",", stringToSave);
+        Debug.Log(dataToWrite);
+        using StreamWriter dataOut = File.AppendText(pathToLog);
+        dataOut.WriteLine(dataToWrite);
+    }
+
 }

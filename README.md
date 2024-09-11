@@ -1,3 +1,5 @@
+
+Write this properly please
 Flow:
 Training A:
 10 trials of
@@ -6,7 +8,8 @@ Training B:
 3 x
     3 repeats (?) of a full blue patch; i.e rew2ld + stay.
 Training C:
-18 trials of task + POINTS displayed
+18 trials of task + POINTS displayed (fixed pattern)
+
 
 
 Task:
@@ -19,7 +22,7 @@ Either
 -Stay in Blue patch
 -Leave for Red patch (default)
 
-Each quarter of experiment, subjects recieve feedback about Bonus Points - NOT IMPLEMENTED
+Each quarter of experiment, subjects recieve feedback about Bonus Points- done
 60% of trials were truncated after the LSD - NOT IMPLEMENTED
 
 

@@ -41,8 +41,7 @@ public class PatchManager : MonoBehaviour
         patch = GetComponent<Patch>();
 
         patchUtils = GetComponent<PatchUtilities>();
-        
-
+       
 
     }
 
@@ -54,10 +53,17 @@ public class PatchManager : MonoBehaviour
     private IEnumerator Task()
     {
         int count = 0;
+
+        int nCounts = 90;
+
+        int[] pointsFeedback = { Mathf.FloorToInt(nCounts / 4), Mathf.FloorToInt(nCounts / 2), Mathf.FloorToInt((nCounts * 3) / 4) };
+
         yield return StartCoroutine(Intertrial("Start of Task"));
-        while (count < 90) {
-            leave = null; 
-            trial = Random.Range(0, 89); // fix
+        while (count < nCounts) {
+            leave = null;
+            //trial = Random.Range(0, 89); // fix
+            trial = patchUtils.GetTrial();
+
             SetPatch(); // takes in leave & returns env
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
 
@@ -69,9 +75,21 @@ public class PatchManager : MonoBehaviour
                     yield return null;
                 }
             }
+    
+            string[]  choiceToWrite = { trial.ToString(), leave.ToString()};
+            gameManager.SaveData(choiceToWrite);
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            yield return StartCoroutine(Intertrial("Completed Trial " + (count+1).ToString(), 0.3f));
+
+            if (pointsFeedback.Contains(count))
+            {
+                yield return StartCoroutine(ShowPointsC(count, trial, leave));
+            }
+            else
+            {
+                yield return StartCoroutine(Intertrial("Completed Trial " + (count + 1).ToString(), 0.3f));
+            }
+
             count++;
         
         }
@@ -147,7 +165,7 @@ public class PatchManager : MonoBehaviour
                 leave = false;
                 SetPatch();
                 yield return StartCoroutine(patch.StartPatch(rewards, envB));
-                Debug.Log("Set Count " + setCount.ToString() + " tB idx " + i.ToString());
+     
             }
 
             if (setCount < nSets - 1)
@@ -201,7 +219,6 @@ public class PatchManager : MonoBehaviour
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
 
-            //yield return StartCoroutine(Intertrial("Completed Trial " + (count + 1).ToString()+ " XX Points", 0.5f));
             yield return StartCoroutine(ShowPointsC(count, trial, leave));
             count++;
 
@@ -211,8 +228,6 @@ public class PatchManager : MonoBehaviour
 
 
     // Patch Manager Utils (move to patchUtils)
-    
-    // Show Points isn't the same as for the task though, what do we want to display? 
 
     private IEnumerator ShowPointsC(int count, int trial, bool? leave)
     {
