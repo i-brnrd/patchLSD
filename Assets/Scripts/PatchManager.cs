@@ -56,6 +56,9 @@ public class PatchManager : MonoBehaviour
 
         int nCounts = 90;
 
+        int points = 0;
+        int accumulatedPoints = 0;
+
         int[] pointsFeedback = { Mathf.FloorToInt(nCounts / 4), Mathf.FloorToInt(nCounts / 2), Mathf.FloorToInt((nCounts * 3) / 4) };
 
         yield return StartCoroutine(Intertrial("Start of Task"));
@@ -78,17 +81,20 @@ public class PatchManager : MonoBehaviour
     
             string[]  choiceToWrite = { trial.ToString(), leave.ToString()};
             gameManager.SaveData(choiceToWrite);
+            Debug.Log(choiceToWrite);
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
 
+            points = GetPoints(trial, leave);
+            accumulatedPoints = accumulatedPoints + points;
+            yield return StartCoroutine(ShowPointsTrial(count, points));
+         
+
             if (pointsFeedback.Contains(count))
             {
-                yield return StartCoroutine(ShowPointsC(count, trial, leave));
+                yield return StartCoroutine(ShowAccumulatedPoints(accumulatedPoints));
             }
-            else
-            {
-                yield return StartCoroutine(Intertrial("Completed Trial " + (count + 1).ToString(), 0.3f));
-            }
+            
 
             count++;
         
@@ -188,7 +194,8 @@ public class PatchManager : MonoBehaviour
     {
         int count = 0;
         int[] trialsC = { 55, 80, 20, 40, 60, 0, 35, 15, 10, 70, 5, 50, 85, 45, 25, 75, 30, 65 };
-        
+        int points = 0;
+
         while (count< trialsC.Length)
         {
             if (count == 0)
@@ -218,8 +225,8 @@ public class PatchManager : MonoBehaviour
             }
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
-
-            yield return StartCoroutine(ShowPointsC(count, trial, leave));
+            points = GetPoints(trial, leave);
+            yield return StartCoroutine(ShowPointsTrial(count, points));
             count++;
 
         }
@@ -229,29 +236,41 @@ public class PatchManager : MonoBehaviour
 
     // Patch Manager Utils (move to patchUtils)
 
-    private IEnumerator ShowPointsC(int count, int trial, bool? leave)
+    private IEnumerator ShowPointsTrial(int count, int points)
+    {
+        // Return the sum of both arrays and display points in the message
+        yield return StartCoroutine(Intertrial($"Completed Trial {count + 1}: Bonus Points {points} Points", 0.5f));
+    }
+
+    private IEnumerator ShowAccumulatedPoints(int accumulatedPoints)
+    {
+        // Return the sum of both arrays and display points in the message
+        yield return StartCoroutine(Intertrial($"You've earned {accumulatedPoints} Bonus Points", 0.5f));
+    }
+
+
+    private int GetPoints(int trial, bool? leave)
     {
         float ldGoSum = patchData.ldGo[trial].Sum();
         float ldStaySum = patchData.ldStay[trial].Sum();
 
         float points = 0.0f;
 
-        if (leave==true) {
+        if (leave == true)
+        {
 
-            points = ldGoSum - ldStaySum; 
+            points = ldGoSum - ldStaySum;
 
-        } else
+        }
+        else
         {
             points = ldStaySum - ldGoSum;
         }
 
         int pointsAsInt = Mathf.RoundToInt(points * 100);
 
-        // Return the sum of both arrays and display points in the message
-        yield return StartCoroutine(Intertrial($"Completed Trial {count + 1}: Bonus Points {pointsAsInt} Points", 0.5f));
+        return pointsAsInt;
     }
-
-    
 
     private IEnumerator EndSession(string displayMessage = null)
     {
