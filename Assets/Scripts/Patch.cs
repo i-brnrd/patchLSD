@@ -48,6 +48,7 @@ public class Patch : MonoBehaviour
     private IEnumerator ShowBox()
     {
         float reward;
+        
         BoxObj.SetActive(true);
         if (blueEnv)
         {

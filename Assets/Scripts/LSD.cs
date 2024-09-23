@@ -6,6 +6,7 @@ public class LSD : MonoBehaviour
 {
     public GameManager gameManager;
     private PatchManager patchManager;
+    private LSLStream lslStream;
 
     public GameObject questionMark;
     public GameObject leaveButton;
@@ -24,6 +25,10 @@ public class LSD : MonoBehaviour
         leftButtonPos = leaveButton.transform.localPosition; //grabbing positions 
         rightButtonPos = stayButton.transform.localPosition;
         originalColour = leaveButton.GetComponent<Button>().colors.normalColor;
+
+        lslStream = gameManager.GetComponent<LSLStream>();
+
+
         //make sure on start all objects in the LSD are inactive 
         DeactivateLSDObjects();
     }
@@ -38,8 +43,12 @@ public class LSD : MonoBehaviour
         // Show question mark before displaying the buttons
         yield return StartCoroutine(QMark());
         bool isLeft = Random.value < 0.5f;
-        ActivateButtons(true);
 
+        ActivateButtons(true);
+#if UNITY_STANDALONE_WIN
+        lslStream.TriggerLSLEvent("Now Showing Leave or Stay Buttons");
+#endif
+       
         if (isLeft)
         {
             leaveButton.transform.localPosition = leftButtonPos;
@@ -56,11 +65,17 @@ public class LSD : MonoBehaviour
 
     private void OnLeaveChoice()
     {
+#if UNITY_STANDALONE_WIN
+        lslStream.TriggerLSLEvent("Clicked Leave");
+#endif
         StartCoroutine(HandleButtonClick(leaveButton, true));
     }
 
     private void OnStayChoice()
     {
+#if UNITY_STANDALONE_WIN
+        lslStream.TriggerLSLEvent("Clicked Stay");
+#endif
         StartCoroutine(HandleButtonClick(stayButton, false));
     }
 
@@ -90,6 +105,9 @@ public class LSD : MonoBehaviour
 
     private IEnumerator QMark()
     {
+#if UNITY_STANDALONE_WIN
+        lslStream.TriggerLSLEvent("Starting 2000ms Choice Phase (Showing Q)");
+#endif
         questionMark.SetActive(true);
         yield return new WaitForSeconds(2);
         questionMark.SetActive(false);

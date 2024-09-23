@@ -38,7 +38,11 @@ public class GameData : MonoBehaviour
             {
                 if (float.TryParse(values[i], out float floatValue))
                 {
-                    floatLine[i] = floatValue;
+                    floatLine[i] = floatValue * (1.0f/0.35f); //max @ full 
+                    if (floatLine[i] > 1.0f)
+                    {
+                        floatLine[i] = 1.0f;
+                    }
                 }
                 else
                 {

@@ -35,17 +35,6 @@ public class PatchUtilities : MonoBehaviour
         }
     }
 
-    public void PatchUtilTest()
-    {
-        Debug.Log("In patchUtils Test");
-    }
-
-
-    //public int GetTrial(int maxTrials = 90)
-    //{
-    //    return Random.Range(0, maxTrials);
-    //}
-
     // Returns the next random trial that isn't from the same group as the previous one
     public int GetTrial()
 
@@ -62,19 +51,19 @@ public class PatchUtilities : MonoBehaviour
             }
         }
 
-        // Reset all groups if all have been used
+        // If all used, reset 
         if (allGroupsUsed)
         {
             ResetUsedGroups();
         }
         int selectedGroup;
-        // Select a random group that isn't the same as the last one
+        // Select a random group NOT same as last one OR se;ected in this round 
         do
         {
             selectedGroup = Random.Range(0, 18);
         } while (selectedGroup == lastGroup || usedGroups[selectedGroup]);
 
-        // Select a random line from the selected group that hasn't been used
+        // Select a random UNUSED line from the selected group
         int selectedLine;
         do
         {

@@ -16,11 +16,15 @@ public class GameManager : MonoBehaviour
 
     // GameObjects 
     public LSD LSD;
+
     public GameObject boxObj; // object 
     public GameObject fixationCross;
 
     public GameObject leaveStayDecisionScreen;
+    public GameObject trainingAFeedbackScreen;
     public GameObject intertrialScreen;
+
+    
 
     // Temp for testing (patches)
     public float[] rewards;
@@ -37,8 +41,8 @@ public class GameManager : MonoBehaviour
         patchManager = GetComponent<PatchManager>();
         boxObj.SetActive(false);
         leaveStayDecisionScreen.SetActive(false);
-
-    }
+        trainingAFeedbackScreen.SetActive(false);
+}
 
 
     private void InitLogFile()
@@ -48,7 +52,7 @@ public class GameManager : MonoBehaviour
 
         pathToLog = Application.persistentDataPath + "/" + fileName + ".txt";
 
-        Debug.Log(pathToLog);
+        Debug.Log("Path to log file:  " + pathToLog);
 
         using StreamWriter dataOut = File.CreateText(pathToLog);
         dataOut.WriteLine("Task Initialised at: " + DateTime.Now.ToString());
@@ -109,7 +113,7 @@ public class GameManager : MonoBehaviour
     public void SaveData(string[] stringToSave)
     {
         string dataToWrite = string.Join(",", stringToSave);
-        Debug.Log(dataToWrite);
+        Debug.Log("Writing out: " + dataToWrite);
         using StreamWriter dataOut = File.AppendText(pathToLog);
         dataOut.WriteLine(dataToWrite);
     }

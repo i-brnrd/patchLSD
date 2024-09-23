@@ -5,6 +5,7 @@ using System.Linq;
 
 public class PatchManager : MonoBehaviour
 {
+    // This script is too long and chaotic
     // GameData Objects 
     public GameObject gameData;
     private GameData patchData;
@@ -12,12 +13,17 @@ public class PatchManager : MonoBehaviour
 
     // Patch
     private Patch patch;
+    private LSLStream lslStream;
 
     // GameObjects 
     public LSD LSD;
-    public GameObject boxObj; // object 
+    public TrainingAFeedback TrainingAFeedback;
+
+    public GameObject boxObj; // object
+    public GameObject trainingAFeedbackScreen;
     public GameObject fixationCross;
     public GameObject leaveStayDecisionScreen;
+    
     public GameObject intertrialScreen;
     public TMP_Text optionalText;
     public TMP_Text continueText;
@@ -41,7 +47,9 @@ public class PatchManager : MonoBehaviour
         patch = GetComponent<Patch>();
 
         patchUtils = GetComponent<PatchUtilities>();
-       
+
+        lslStream = GetComponent<LSLStream>();
+
 
     }
 
@@ -53,21 +61,29 @@ public class PatchManager : MonoBehaviour
     private IEnumerator Task()
     {
         int count = 0;
-
         int nCounts = 90;
-
-        int points = 0;
+        int points;
         int accumulatedPoints = 0;
+        bool truncate = true;
 
         int[] pointsFeedback = { Mathf.FloorToInt(nCounts / 4), Mathf.FloorToInt(nCounts / 2), Mathf.FloorToInt((nCounts * 3) / 4) };
 
-        yield return StartCoroutine(Intertrial("Start of Task"));
+#if UNITY_STANDALONE_WIN
+        lslStream.StreamStart(); // start lsl stream on task
+#endif
+
+        yield return StartCoroutine(Intertrial("Starting Task"));
+#if UNITY_STANDALONE_WIN
+        lslStream.TriggerLSLEvent("Starting Task");
+#endif
         while (count < nCounts) {
             leave = null;
-            //trial = Random.Range(0, 89); // fix
             trial = patchUtils.GetTrial();
-
             SetPatch(); // takes in leave & returns env
+#if UNITY_STANDALONE_WIN
+            lslStream.TriggerLSLEvent("Start: Round " + count.ToString() + " of 90; Trial: " + trial.ToString());
+#endif
+
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
 
             if (leave == null)
@@ -81,12 +97,21 @@ public class PatchManager : MonoBehaviour
     
             string[]  choiceToWrite = { trial.ToString(), leave.ToString()};
             gameManager.SaveData(choiceToWrite);
-            Debug.Log(choiceToWrite);
-            SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            
+
+            truncate = count % 3 != 0;
+
+            if (!truncate)
+            {
+                SetPatch();
+#if UNITY_STANDALONE_WIN
+                lslStream.TriggerLSLEvent("Showing post-choice env; leave?: " + leave.ToString());
+#endif
+                yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            }
 
             points = GetPoints(trial, leave);
-            accumulatedPoints = accumulatedPoints + points;
+            accumulatedPoints += points;
             yield return StartCoroutine(ShowPointsTrial(count, points));
          
 
@@ -94,12 +119,16 @@ public class PatchManager : MonoBehaviour
             {
                 yield return StartCoroutine(ShowAccumulatedPoints(accumulatedPoints));
             }
-            
+#if UNITY_STANDALONE_WIN
+            lslStream.TriggerLSLEvent("End: Round " + count.ToString() + " of 90; Trial: " + trial.ToString());
+#endif
 
             count++;
-        
         }
-       StartCoroutine(EndSession("End of Task"));
+#if UNITY_STANDALONE_WIN
+        lslStream.StreamStop(); // stop lsl stream
+#endif
+        StartCoroutine(EndSession("End of Task"));
     }
 
     public void StartTrainingA()
@@ -112,6 +141,10 @@ public class PatchManager : MonoBehaviour
         int count = 0;
 
         int[] trialsA = { 18, 42, 86, 27, 65, 39, 76, 4, 13, 53 }; //matlab 1 based indexing
+#if UNITY_STANDALONE_WIN
+        lslStream.StreamStart(); // start lsl stream on task
+        lslStream.TriggerLSLEvent("Starting Training A");
+#endif
 
         while (count < trialsA.Length)
         {
@@ -123,15 +156,26 @@ public class PatchManager : MonoBehaviour
                 yield return StartCoroutine(Intertrial());
             }
             trial = trialsA[count] -1; //c# 0 based 
-
+            
             leave = null;
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
             yield return StartCoroutine(Intertrial());
+           
             leave = true;
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
-           
+
+            inChoicePhase = true;
+            trainingAFeedbackScreen.SetActive(true);
+            yield return StartCoroutine(TrainingAFeedback.Choice());
+            while (inChoicePhase == true)
+            {
+                yield return null;
+            }
+
+
+
             count++;
         }
 
@@ -234,7 +278,7 @@ public class PatchManager : MonoBehaviour
     }
 
 
-    // Patch Manager Utils (move to patchUtils)
+    // Patch Manager Utils (TODO: move to patchUtils; keep patterns here AND/OR break up patterns)
 
     private IEnumerator ShowPointsTrial(int count, int points)
     {
@@ -325,6 +369,7 @@ public class PatchManager : MonoBehaviour
             envB = true;
             rewards = patchData.ldStay[trial];
         }
+
     }
 
     public void BeginChoicePhase()
@@ -336,15 +381,26 @@ public class PatchManager : MonoBehaviour
 
     public void ClickedLeaveLSD()
     {
+        Debug.Log("Chose Leave in LSD");
         leaveStayDecisionScreen.SetActive(false);
         leave = true;
     }
 
     public void ClickedStayLSD()
     {
+        Debug.Log("Chose Stay in LSD");
         leaveStayDecisionScreen.SetActive(false);
         leave = false;
-    }  
+    }
+
+    
+    public void TrainingAChoice(bool red)
+    {
+        Debug.Log("Training A Chose leave?: " + red.ToString());
+        trainingAFeedbackScreen.SetActive(false);
+        inChoicePhase = false;
+
+    }
 
 }
 
