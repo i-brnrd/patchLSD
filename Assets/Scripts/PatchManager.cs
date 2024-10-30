@@ -155,14 +155,15 @@ public class PatchManager : MonoBehaviour
             {
                 yield return StartCoroutine(Intertrial());
             }
+
             trial = trialsA[count] -1; //c# 0 based 
             
-            leave = null;
+            leave = true;
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
             yield return StartCoroutine(Intertrial());
            
-            leave = true;
+            leave = null;
             SetPatch();
             yield return StartCoroutine(patch.StartPatch(rewards, envB));
 
@@ -174,8 +175,22 @@ public class PatchManager : MonoBehaviour
                 yield return null;
             }
 
+            // training A choice has now returned a choice:
+            // give feedback on their decision 
+            Debug.Log("Chose red? "+ leave.ToString());
 
-
+            float redSum = patchData.ldGo[trial].Sum();
+            float blueSum = patchData.rew2ld[trial].Sum();
+            
+            if ((redSum > blueSum & (leave ?? false)) || (blueSum > redSum & (!leave ?? false)))
+            {
+                yield return StartCoroutine(Intertrial("You made the correct decision"));
+            }
+            else
+            {
+                yield return StartCoroutine(Intertrial("You made the wrong decision"));
+            }
+            
             count++;
         }
 
@@ -250,7 +265,8 @@ public class PatchManager : MonoBehaviour
             {
                 yield return StartCoroutine(Intertrial());
             }
-            trial = trialsC[count];
+            trial = Random.Range(0, 89); 
+            //trial = trialsC[count];
             leave = null;
             SetPatch(); // takes in leave & returns env
             Debug.Log(envB.ToString() + trial.ToString() + count.ToString());
@@ -315,6 +331,7 @@ public class PatchManager : MonoBehaviour
 
         return pointsAsInt;
     }
+
 
     private IEnumerator EndSession(string displayMessage = null)
     {
@@ -399,7 +416,7 @@ public class PatchManager : MonoBehaviour
         Debug.Log("Training A Chose leave?: " + red.ToString());
         trainingAFeedbackScreen.SetActive(false);
         inChoicePhase = false;
-
+        leave = red;
     }
 
 }
