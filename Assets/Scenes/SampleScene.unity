@@ -189,8 +189,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -0.18260002, y: 0.6285498, z: 0}
-    m_Extent: {x: 8.6055, y: 8.35785, z: 0}
+    m_Center: {x: -0.18225002, y: 0.6285999, z: 0}
+    m_Extent: {x: 8.60545, y: 8.3566, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -510,8 +510,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 1.45945, y: 1.1826, z: 0}
-    m_Extent: {x: 6.45905, y: 7.1287003, z: 0}
+    m_Center: {x: 1.45895, y: 1.1825998, z: 0}
+    m_Extent: {x: 6.45865, y: 7.1275997, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -711,6 +711,8 @@ GameObject:
   - component: {fileID: 305056127}
   - component: {fileID: 305056128}
   - component: {fileID: 305056129}
+  - component: {fileID: 305056130}
+  - component: {fileID: 305056131}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -738,6 +740,7 @@ MonoBehaviour:
   leaveStayDecisionScreen: {fileID: 1234820596}
   trainingAFeedbackScreen: {fileID: 525913059}
   intertrialScreen: {fileID: 1227706539}
+  eegFlag: 0
   rewards: []
   defaultPatch: []
   inChoicePhase: 0
@@ -770,6 +773,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameData: {fileID: 1433476839}
+  patchData: {fileID: 0}
+  trial: 0
   LSD: {fileID: 1234820599}
   TrainingAFeedback: {fileID: 525913063}
   boxObj: {fileID: 2008139722}
@@ -780,6 +785,7 @@ MonoBehaviour:
   optionalText: {fileID: 989376378}
   continueText: {fileID: 1511561464}
   rewards: []
+  useBlueEnv: 1
   inChoicePhase: 0
 --- !u!114 &305056126
 MonoBehaviour:
@@ -831,6 +837,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df134ffc80a9446e09317f8155b6570e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &305056130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305056122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6335795c9375b4f5ca090f392ef3841c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewards: []
+--- !u!114 &305056131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305056122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 839b8b70a72ab41c3b5e7bf7fabd6c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewards: []
 --- !u!1 &308041889
 GameObject:
   m_ObjectHideFlags: 0
@@ -897,8 +929,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -2.5954497, y: 1.3533999, z: 0}
-    m_Extent: {x: 8.74905, y: 4.1019, z: 0}
+    m_Center: {x: -2.59605, y: 1.3542501, z: 0}
+    m_Extent: {x: 8.75015, y: 4.10225, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1407,8 +1439,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -0.0041999817, y: 0.24820018, z: 0}
-    m_Extent: {x: 4.244, y: 5.0809, z: 0}
+    m_Center: {x: -0.004150152, y: 0.24870014, z: 0}
+    m_Extent: {x: 4.2442503, y: 5.08, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0

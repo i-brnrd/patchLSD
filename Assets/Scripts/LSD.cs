@@ -46,7 +46,7 @@ public class LSD : MonoBehaviour
 
         ActivateButtons(true);
 #if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("Now Showing Leave or Stay Buttons");
+        lslStream.TriggerLSLEvent("8");
 #endif
        
         if (isLeft)
@@ -65,17 +65,11 @@ public class LSD : MonoBehaviour
 
     private void OnLeaveChoice()
     {
-#if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("Clicked Leave");
-#endif
         StartCoroutine(HandleButtonClick(leaveButton, true));
     }
 
     private void OnStayChoice()
     {
-#if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("Clicked Stay");
-#endif
         StartCoroutine(HandleButtonClick(stayButton, false));
     }
 
@@ -98,16 +92,12 @@ public class LSD : MonoBehaviour
         {
             patchManager.ClickedStayLSD();
         }
-        // Call the method on another script
 
         DeactivateLSDObjects();
     }
 
     private IEnumerator QMark()
     {
-#if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("Starting 2000ms Choice Phase (Showing Q)");
-#endif
         questionMark.SetActive(true);
         yield return new WaitForSeconds(2);
         questionMark.SetActive(false);

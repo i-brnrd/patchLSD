@@ -5,11 +5,14 @@ using System.Linq;
 
 public class PatchManager : MonoBehaviour
 {
-    // This script is too long and chaotic
     // GameData Objects 
     public GameObject gameData;
-    private GameData patchData;
-    private int trial;
+    public GameData patchData;
+    public int trial;
+
+
+    // Controllers
+    private TaskController taskController; 
 
     // Patch
     private Patch patch;
@@ -33,9 +36,11 @@ public class PatchManager : MonoBehaviour
     private PatchUtilities patchUtils;
 
     public float[] rewards;
-    private bool envB = true; // in the blue (default) environment
+    public bool useBlueEnv = true; // in the blue (default) environment
     public bool inChoicePhase = false; //choice phase 
     public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay 
+    private bool training;
+
 
 
     private void Awake()
@@ -50,85 +55,21 @@ public class PatchManager : MonoBehaviour
 
         lslStream = GetComponent<LSLStream>();
 
+        taskController = GetComponent<TaskController>();
+
 
     }
 
     public void StartTask()
     {
-        StartCoroutine(Task());
-    }
 
-    private IEnumerator Task()
-    {
-        int count = 0;
-        int nCounts = 90;
-        int points;
-        int accumulatedPoints = 0;
-        bool truncate = true;
-
-        int[] pointsFeedback = { Mathf.FloorToInt(nCounts / 4), Mathf.FloorToInt(nCounts / 2), Mathf.FloorToInt((nCounts * 3) / 4) };
-
-#if UNITY_STANDALONE_WIN
-        lslStream.StreamStart(); // start lsl stream on task
-#endif
-
-        yield return StartCoroutine(Intertrial("Starting Task"));
-#if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("Starting Task");
-#endif
-        while (count < nCounts) {
-            leave = null;
-            trial = patchUtils.GetTrial();
-            SetPatch(); // takes in leave & returns env
-#if UNITY_STANDALONE_WIN
-            lslStream.TriggerLSLEvent("Start: Round " + count.ToString() + " of 90; Trial: " + trial.ToString());
-#endif
-
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
-
-            if (leave == null)
-            {
-                BeginChoicePhase();
-                while (leave == null)
-                {
-                    yield return null;
-                }
-            }
-    
-            string[]  choiceToWrite = { trial.ToString(), leave.ToString()};
-            gameManager.SaveData(choiceToWrite);
-            
-
-            truncate = count % 3 != 0;
-
-            if (!truncate)
-            {
-                SetPatch();
-#if UNITY_STANDALONE_WIN
-                lslStream.TriggerLSLEvent("Showing post-choice env; leave?: " + leave.ToString());
-#endif
-                yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            }
-
-            points = GetPoints(trial, leave);
-            accumulatedPoints += points;
-            yield return StartCoroutine(ShowPointsTrial(count, points));
-         
-
-            if (pointsFeedback.Contains(count))
-            {
-                yield return StartCoroutine(ShowAccumulatedPoints(accumulatedPoints));
-            }
-#if UNITY_STANDALONE_WIN
-            lslStream.TriggerLSLEvent("End: Round " + count.ToString() + " of 90; Trial: " + trial.ToString());
-#endif
-
-            count++;
-        }
-#if UNITY_STANDALONE_WIN
-        lslStream.StreamStop(); // stop lsl stream
-#endif
-        StartCoroutine(EndSession("End of Task"));
+        // START THE EEG STREM AND STOP
+        //aslo be very clear that training = false
+        // call it inTraining? tbh though events might deal with this better,
+        // but tbh probs not 
+        StartCoroutine(taskController.ExecuteTask());
+        //StartCoroutine(Task
+        //// stope the eeg stream 
     }
 
     public void StartTrainingA()
@@ -146,6 +87,8 @@ public class PatchManager : MonoBehaviour
         lslStream.TriggerLSLEvent("Starting Training A");
 #endif
 
+        training = true;
+
         while (count < trialsA.Length)
         {
             if (count == 0)
@@ -160,12 +103,12 @@ public class PatchManager : MonoBehaviour
             
             leave = true;
             SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(patch.StartPatchTraining(rewards, useBlueEnv));
             yield return StartCoroutine(Intertrial());
            
             leave = null;
             SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            yield return StartCoroutine(patch.StartPatchTraining(rewards, useBlueEnv));
 
             inChoicePhase = true;
             trainingAFeedbackScreen.SetActive(true);
@@ -211,6 +154,8 @@ public class PatchManager : MonoBehaviour
         int nSets = 3;
         int setCount = 0;
 
+        training = true;
+
         while (setCount < nSets)
         {
             yield return StartCoroutine(Intertrial($"Start of Training (B) Set {setCount + 1}"));
@@ -226,10 +171,10 @@ public class PatchManager : MonoBehaviour
             
                 leave = null;
                 SetPatch();
-                yield return StartCoroutine(patch.StartPatch(rewards, envB));
+                yield return StartCoroutine(patch.StartPatchTraining(rewards, useBlueEnv));
                 leave = false;
                 SetPatch();
-                yield return StartCoroutine(patch.StartPatch(rewards, envB));
+                yield return StartCoroutine(patch.StartPatchTraining(rewards, useBlueEnv));
      
             }
 
@@ -255,6 +200,8 @@ public class PatchManager : MonoBehaviour
         int[] trialsC = { 55, 80, 20, 40, 60, 0, 35, 15, 10, 70, 5, 50, 85, 45, 25, 75, 30, 65 };
         int points = 0;
 
+        training = true;
+
         while (count< trialsC.Length)
         {
             if (count == 0)
@@ -269,8 +216,8 @@ public class PatchManager : MonoBehaviour
             //trial = trialsC[count];
             leave = null;
             SetPatch(); // takes in leave & returns env
-            Debug.Log(envB.ToString() + trial.ToString() + count.ToString());
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
+            Debug.Log(useBlueEnv.ToString() + trial.ToString() + count.ToString());
+            yield return StartCoroutine(patch.StartPatchTraining(rewards, useBlueEnv));
 
             // After the patch is complete, decide what to do next
             if (leave == null)
@@ -284,8 +231,8 @@ public class PatchManager : MonoBehaviour
 
             }
             SetPatch();
-            yield return StartCoroutine(patch.StartPatch(rewards, envB));
-            points = GetPoints(trial, leave);
+            yield return StartCoroutine(patch.StartPatchTraining(rewards, useBlueEnv));
+            points = GetPoints();
             yield return StartCoroutine(ShowPointsTrial(count, points));
             count++;
 
@@ -296,20 +243,23 @@ public class PatchManager : MonoBehaviour
 
     // Patch Manager Utils (TODO: move to patchUtils; keep patterns here AND/OR break up patterns)
 
-    private IEnumerator ShowPointsTrial(int count, int points)
+    public IEnumerator ShowPointsTrial(int count, int points)
     {
+#if UNITY_STANDALONE_WIN
+        lslStream.TriggerLSLEvent(points.ToString());
+#endif
         // Return the sum of both arrays and display points in the message
         yield return StartCoroutine(Intertrial($"Completed Trial {count + 1}: Bonus Points {points} Points", 0.5f));
     }
 
-    private IEnumerator ShowAccumulatedPoints(int accumulatedPoints)
+    public IEnumerator ShowAccumulatedPoints(int accumulatedPoints)
     {
         // Return the sum of both arrays and display points in the message
         yield return StartCoroutine(Intertrial($"You've earned {accumulatedPoints} Bonus Points", 0.5f));
     }
 
 
-    private int GetPoints(int trial, bool? leave)
+    public int GetPoints()
     {
         float ldGoSum = patchData.ldGo[trial].Sum();
         float ldStaySum = patchData.ldStay[trial].Sum();
@@ -333,7 +283,7 @@ public class PatchManager : MonoBehaviour
     }
 
 
-    private IEnumerator EndSession(string displayMessage = null)
+    public IEnumerator EndSession(string displayMessage = null)
     {
         yield return new WaitForSeconds(0.1f);
         yield return StartCoroutine(Intertrial(displayMessage, 0.5f));
@@ -342,7 +292,7 @@ public class PatchManager : MonoBehaviour
     }
     
 
-    private IEnumerator Intertrial(string displayMessage = null, float delay = 0f)
+    public IEnumerator Intertrial(string displayMessage = null, float delay = 0f)
     {
         if (!string.IsNullOrEmpty(displayMessage)) {
             Debug.Log(displayMessage);
@@ -373,31 +323,60 @@ public class PatchManager : MonoBehaviour
     {
         if (leave == null)
         {
-            envB = true;
+            useBlueEnv = true;
             rewards = patchData.rew2ld[trial];
         }
         else if (leave == true)
         {
-            envB = false;
+            useBlueEnv = false;
             rewards = patchData.ldGo[trial];
         }
         else if (leave == false)
         {
-            envB = true;
+            useBlueEnv = true;
             rewards = patchData.ldStay[trial];
         }
 
     }
 
+    public float[] SetPatchArg(bool? leave)
+    {
+        if (leave == null)
+        {
+            useBlueEnv = true;
+            return patchData.rew2ld[trial];
+        }
+        else if (leave == true)
+        {
+            useBlueEnv = false;
+            return patchData.ldGo[trial];
+        }
+        else
+        {
+            useBlueEnv = true;
+            return patchData.ldStay[trial];
+        }
+    }
+
     public void BeginChoicePhase()
     {
+        if (!training)
+        {
+#if UNITY_STANDALONE_WIN
+            lslStream.TriggerLSLEvent("7");
+#endif
+        }
         inChoicePhase = true;
         leaveStayDecisionScreen.SetActive(true);
         LSD.ChoicePhase();
     }
 
+
     public void ClickedLeaveLSD()
     {
+#if UNITY_STANDALONE_WIN
+        lslStream.TriggerLSLEvent("40000");
+#endif
         Debug.Log("Chose Leave in LSD");
         leaveStayDecisionScreen.SetActive(false);
         leave = true;
@@ -406,6 +385,10 @@ public class PatchManager : MonoBehaviour
     public void ClickedStayLSD()
     {
         Debug.Log("Chose Stay in LSD");
+
+#if UNITY_STANDALONE_WIN
+        lslStream.TriggerLSLEvent("30000");
+#endif
         leaveStayDecisionScreen.SetActive(false);
         leave = false;
     }
@@ -418,6 +401,18 @@ public class PatchManager : MonoBehaviour
         inChoicePhase = false;
         leave = red;
     }
+
+
+    public void WriteOutData()
+    {
+        // included to avoid using
+        string[] choiceToWrite = { trial.ToString(), leave.ToString() };
+        gameManager.SaveData(choiceToWrite);
+        // actual 
+
+    }
+
+
 
 }
 

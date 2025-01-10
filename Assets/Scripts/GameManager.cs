@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     public GameObject trainingAFeedbackScreen;
     public GameObject intertrialScreen;
 
+
+    public bool eegFlag = false; 
     
 
     // Temp for testing (patches)
