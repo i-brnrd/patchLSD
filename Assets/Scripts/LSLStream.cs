@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using LSL;
 
@@ -22,7 +20,7 @@ public class LSLStream : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No stream started");
+            Debug.LogWarning("No LSL stream started");
         }
     }
 

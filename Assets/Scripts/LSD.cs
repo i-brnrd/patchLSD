@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class LSD : MonoBehaviour
 {
     public GameManager gameManager;
-    private PatchManager patchManager;
-    private LSLStream lslStream;
+    private SessionManager sessionManager;
+    private EegStream eegStream;
 
     public GameObject questionMark;
     public GameObject leaveButton;
@@ -21,14 +21,13 @@ public class LSD : MonoBehaviour
 
     private void Awake()
     {
-        patchManager = gameManager.GetComponent<PatchManager>();
+        sessionManager = gameManager.GetComponent<SessionManager>();
         leftButtonPos = leaveButton.transform.localPosition; //grabbing positions 
         rightButtonPos = stayButton.transform.localPosition;
         originalColour = leaveButton.GetComponent<Button>().colors.normalColor;
 
-        lslStream = gameManager.GetComponent<LSLStream>();
-
-
+        eegStream = gameManager.GetComponent<EegStream>();
+     
         //make sure on start all objects in the LSD are inactive 
         DeactivateLSDObjects();
     }
@@ -45,10 +44,9 @@ public class LSD : MonoBehaviour
         bool isLeft = Random.value < 0.5f;
 
         ActivateButtons(true);
-#if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("8");
-#endif
-       
+
+        eegStream.LogButtonsAppear();
+
         if (isLeft)
         {
             leaveButton.transform.localPosition = leftButtonPos;
@@ -81,23 +79,16 @@ public class LSD : MonoBehaviour
 
         // Wait for the highlight duration
         yield return new WaitForSeconds(highlightDuration);
-
         // Revert the button color
         button.GetComponent<Image>().color = originalColour;
 
-        if (isLeave)
-        {
-            patchManager.ClickedLeaveLSD();
-        } else
-        {
-            patchManager.ClickedStayLSD();
-        }
-
+        sessionManager.MadeLSD(isLeave);
         DeactivateLSDObjects();
     }
 
     private IEnumerator QMark()
     {
+        eegStream.LogChoicePhaseBegins();
         questionMark.SetActive(true);
         yield return new WaitForSeconds(2);
         questionMark.SetActive(false);

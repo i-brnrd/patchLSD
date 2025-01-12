@@ -5,93 +5,88 @@ using System.Linq;
 
 public class TrainingAController : MonoBehaviour
 {
+    public GameObject trainingAFeedbackScreen;
 
-    private PatchManager sessionManager;
-    private PatchUtilities trialSelectUtils;
-    private Patch patchPresenter;
-
-    private bool useBlueEnv = true;
-    private int maxTrials = 90;
-
-    private int count = 0;
-
-    int points;
-    int accumulatedPoints;
-    bool shouldTruncate = true;
-
-    public float[] rewards;
+    private SessionManager sessionManager;
+    private PatchPresenter patchPresenter;
+    private TrainingAFeedback trainingAFeedback;
 
 
-    // I use the training flag because in BeginChoicePhase; keep that in SessionManager, It doesnt belong here. 
-    // randomise the truncations here remember
-    // start & stop EEG Stream in the sessionManager NOT HERE. 
+    private int trialIdx = 0;
+
+    private float[] redRewards;
+    private float[] blueRewards;
 
     private void Awake()
     {
-
-        sessionManager = GetComponent<PatchManager>();
-        trialSelectUtils = GetComponent<PatchUtilities>();
-        patchPresenter = GetComponent<Patch>();
-
+        sessionManager = GetComponent<SessionManager>();
+        patchPresenter = GetComponent<PatchPresenter>();
+        trainingAFeedback = trainingAFeedbackScreen.GetComponent<TrainingAFeedback>();
     }
 
 
-    public IEnumerator ExecuteTask()
+    public IEnumerator RunTrainingA()
     {
-        int[] accumPointsFeedback = { Mathf.FloorToInt(maxTrials / 4), Mathf.FloorToInt(maxTrials / 2), Mathf.FloorToInt((maxTrials * 3) / 4) };
+        int[] trialsA = { 18, 42, 86, 27, 65, 39, 76, 4, 13, 53 }; //MATLAB trianing 1 based indexing
 
-        yield return StartCoroutine(sessionManager.Intertrial("Starting Task"));
-        Debug.Log("start wait WHAT IS GOING ON ");
-        yield return new WaitForSeconds(1.0f);
-        Debug.Log("stop wait");
-
-        sessionManager.useBlueEnv = useBlueEnv;
-
-        while (count < maxTrials)
+        while (trialIdx < trialsA.Length)
         {
+            if (trialIdx == 0)
+            {
+                yield return StartCoroutine(sessionManager.Intertrial("Start of Training (A)", 0.5f));
+            }
+            else
+            {
+                yield return StartCoroutine(sessionManager.Intertrial());
+            }
+
+            sessionManager.leave = true;
+            sessionManager.patchIdx = trialsA[trialIdx] - 1; //c# 0 based
+            redRewards = sessionManager.SetPatch(); //sets patch  
+
+            yield return StartCoroutine(patchPresenter.StartPatch(redRewards, sessionManager.useBlueEnv, trialIdx, sessionManager.patchIdx));
+            yield return StartCoroutine(sessionManager.Intertrial());
+
+
             sessionManager.leave = null;
-            sessionManager.trial = trialSelectUtils.GetTrial();
-            rewards = sessionManager.SetPatchArg(sessionManager.leave);
+            sessionManager.patchIdx = trialsA[trialIdx] - 1; //c# 0 based
+            blueRewards = sessionManager.SetPatch();
 
-            yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, sessionManager.trial));
+            yield return StartCoroutine(patchPresenter.StartPatch(blueRewards, sessionManager.useBlueEnv, trialIdx, sessionManager.patchIdx));
 
-            if (sessionManager.leave == null)
+            sessionManager.inChoicePhase = true;
+            trainingAFeedbackScreen.SetActive(true);
+            yield return StartCoroutine(trainingAFeedback.Choice());
+
+            while (sessionManager.inChoicePhase == true) // wait til the participant returns a choice 
             {
-                sessionManager.BeginChoicePhase();
-                while (sessionManager.leave == null)
-                {
-                    yield return null;
-                }
+                yield return null;
             }
 
-            // write out via session manager 
-            sessionManager.WriteOutData();
+            // give feedback on their decision
+            float redSum = redRewards.Sum();
+            float blueSum = blueRewards.Sum();
 
-
-            shouldTruncate = count % 3 != 0; // call out 
-
-            if (!shouldTruncate)
+            if ((redSum > blueSum & (sessionManager.leave ?? false)) || (blueSum > redSum & (!sessionManager.leave ?? false)))
             {
-                rewards = sessionManager.SetPatchArg(sessionManager.leave);
-                yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, sessionManager.trial));
+                yield return StartCoroutine(sessionManager.Intertrial("You made the correct decision"));
+            }
+            else
+            {
+                yield return StartCoroutine(sessionManager.Intertrial("You made the wrong decision"));
             }
 
-            points = sessionManager.GetPoints();
-            accumulatedPoints += points;
-            yield return StartCoroutine(sessionManager.ShowPointsTrial(count, points));
-
-
-            if (accumPointsFeedback.Contains(count))
-            {
-                yield return StartCoroutine(sessionManager.ShowAccumulatedPoints(accumulatedPoints));
-            }
-
-            count++;
+            trialIdx++;
         }
-
-        StartCoroutine(sessionManager.EndSession("End of Task"));
     }
 
+    public void TrainingAChoice(bool red)
+    {
+        Debug.Log("Training A: leave? " + red.ToString());
+        trainingAFeedbackScreen.SetActive(false);
+        sessionManager.inChoicePhase = false;
+        sessionManager.leave = red;
+    }
 }
 
-
+            

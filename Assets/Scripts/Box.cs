@@ -5,7 +5,7 @@ using UnityEngine;
 public class Box : MonoBehaviour
 {
     // Presentation Objects
-    private SpriteRenderer box;
+    private SpriteRenderer boxSprite;
     private GameObject contentsMask;
     private GameObject environment;
 
@@ -17,13 +17,13 @@ public class Box : MonoBehaviour
         environment = gameObject.transform.Find("Environment").gameObject;
         contentsMask = gameObject.transform.Find("Contents").gameObject;
 
-        box = environment.GetComponent<SpriteRenderer>();
+        boxSprite = environment.GetComponent<SpriteRenderer>();
         originalScale = contentsMask.transform.localScale;
     }
 
     public void SetBoxColour(Color colour)
     {
-        box.color = colour;
+        boxSprite.color = colour;
     }
 
     public void SetBarHeight(float height)

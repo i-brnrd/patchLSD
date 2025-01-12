@@ -6,50 +6,53 @@ using System.Linq;
 public class TaskController : MonoBehaviour
 {
     
-    private PatchManager sessionManager;
-    private PatchUtilities trialSelectUtils;
-    private Patch patchPresenter;
+    private SessionManager sessionManager;
+    private PatchPresenter patchPresenter;
 
     private bool useBlueEnv = true;
+
+    private int trialIdx = 0;
     private int maxTrials = 90;
 
-    private int count = 0;
-    
+    private int[] patchOrder;
+    private bool[] truncationOrder;
+
     int points;
     int accumulatedPoints;
-    bool shouldTruncate = true;
 
     public float[] rewards;
 
-    // randomise the truncations here remember
-    // sld rewards be public? 
+
 
     private void Awake()
     {
-        sessionManager = GetComponent<PatchManager>();
-        trialSelectUtils = GetComponent<PatchUtilities>();
-        patchPresenter = GetComponent<Patch>();
-
+        sessionManager = GetComponent<SessionManager>();
+        patchPresenter = GetComponent<PatchPresenter>();
     }
+
+    // get in the 
  
-    public IEnumerator ExecuteTask()
+    public IEnumerator RunTask()
     {
         int[] accumPointsFeedback = { Mathf.FloorToInt(maxTrials / 4), Mathf.FloorToInt(maxTrials / 2), Mathf.FloorToInt((maxTrials * 3) / 4) };
 
-        yield return StartCoroutine(sessionManager.Intertrial("Starting Task"));
-        Debug.Log("start wait WHAT IS GOING ON ");
-        yield return new WaitForSeconds(1.0f);
-        Debug.Log("stop wait");
+        patchOrder = sessionManager.patchOrder;
+        truncationOrder = sessionManager.truncationOrder;
 
+        yield return new WaitForSeconds(1.0f);
+        yield return StartCoroutine(sessionManager.Intertrial("Starting Task"));
+       
         sessionManager.useBlueEnv = useBlueEnv;
 
-        while (count < maxTrials)
+        while (trialIdx < maxTrials)
         {
+            // get patch
+            sessionManager.patchIdx = patchOrder[trialIdx];
             sessionManager.leave = null;
-            sessionManager.trial = trialSelectUtils.GetTrial();
-            rewards = sessionManager.SetPatchArg(sessionManager.leave); 
+
+            rewards = sessionManager.SetPatch(); 
                        
-            yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, sessionManager.trial));
+            yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, trialIdx, sessionManager.patchIdx));
 
             if (sessionManager.leave == null)
             {
@@ -60,29 +63,26 @@ public class TaskController : MonoBehaviour
                 }
             }
 
-            // write out via session manager 
-            sessionManager.WriteOutData();
+            // write out decision via session manager 
+            sessionManager.WriteOutLSD();
 
-
-            shouldTruncate = count % 3 != 0; // call out 
-
-            if (!shouldTruncate)
+            if (!truncationOrder[trialIdx])
             {
-                rewards = sessionManager.SetPatchArg(sessionManager.leave);
-                yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, sessionManager.trial));
+                rewards = sessionManager.SetPatch();
+                yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv,trialIdx, sessionManager.patchIdx));
             }
 
             points = sessionManager.GetPoints();
             accumulatedPoints += points;
-            yield return StartCoroutine(sessionManager.ShowPointsTrial(count, points));
+            yield return StartCoroutine(sessionManager.ShowPointsTrial(trialIdx, points));
 
 
-            if (accumPointsFeedback.Contains(count))
+            if (accumPointsFeedback.Contains(trialIdx))
             {
                 yield return StartCoroutine(sessionManager.ShowAccumulatedPoints(accumulatedPoints));
             }
 
-            count++;
+            trialIdx++;
         }
 
         StartCoroutine(sessionManager.EndSession("End of Task"));

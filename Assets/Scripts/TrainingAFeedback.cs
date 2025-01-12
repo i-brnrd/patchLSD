@@ -6,12 +6,10 @@ public class TrainingAFeedback : MonoBehaviour
 {
     //this needs simplified the choice logic has gone ott and can be combined with LSD script 
     public GameManager gameManager;
-    private PatchManager patchManager;
-    private LSLStream lslStream;
+    private TrainingAController trainingAController;
 
     public GameObject changingButton;
     public GameObject redButton;
-
 
     public Color originalColour;
 
@@ -19,50 +17,34 @@ public class TrainingAFeedback : MonoBehaviour
 
     private void Awake()
     {
-        patchManager = gameManager.GetComponent<PatchManager>();
+        trainingAController = gameManager.GetComponent<TrainingAController>();
         originalColour = changingButton.GetComponent<Button>().colors.normalColor;
-
-        lslStream = gameManager.GetComponent<LSLStream>();
-
-
         //make sure on start all objects in the LSD are inactive 
-        DeactivateObjects();
+        ActivateButtons(false);
     }
 
    
     public IEnumerator Choice()
     {
         // Show question mark before displaying the buttons
-       
         yield return new WaitForSeconds(0.1f);
 
         ActivateButtons(true);
-#if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("Now Showing Changing or Red Buttons");
-#endif
-
-
         Interactable(true);
         AddListeners();
     }
 
     private void OnChangingChoice()
     {
-#if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("Selected Blue/ Changing");
-#endif
         StartCoroutine(HandleButtonClick(changingButton, false));
     }
 
     private void OnRedChoice()
     {
-#if UNITY_STANDALONE_WIN
-        lslStream.TriggerLSLEvent("Selected Red/ Default");
-#endif
         StartCoroutine(HandleButtonClick(redButton, true));
     }
 
-    private IEnumerator HandleButtonClick(GameObject button, bool red)
+    private IEnumerator HandleButtonClick(GameObject button, bool leave)
     {
         // Make buttons non-interactable
         Interactable(false);
@@ -74,16 +56,11 @@ public class TrainingAFeedback : MonoBehaviour
         // Revert the button color
         button.GetComponent<Image>().color = originalColour;
 
-        DeactivateObjects();
+        ActivateButtons(false);
 
-        patchManager.TrainingAChoice(red);
+        trainingAController.TrainingAChoice(leave);
     
 
-    }
-
-    private void DeactivateObjects()
-    {
-        ActivateButtons(false);
     }
 
     private void ActivateButtons(bool active)

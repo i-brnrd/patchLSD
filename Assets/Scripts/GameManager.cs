@@ -8,11 +8,10 @@ public class GameManager : MonoBehaviour
 
     // GameData Objects 
     public GameObject gameData;
-
     public GameObject startScreen;
 
     // Patch
-    private PatchManager patchManager;
+    private SessionManager sessionManager;
 
     // GameObjects 
     public LSD LSD;
@@ -27,24 +26,23 @@ public class GameManager : MonoBehaviour
 
     public bool eegFlag = false; 
     
-
-    // Temp for testing (patches)
-    public float[] rewards;
-    public float[] defaultPatch;
-
-    // Envs 
-    public bool inChoicePhase = false;
-    public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay
-
+    // Path To Log
     public string pathToLog;
 
     private void Awake()
     {
-        patchManager = GetComponent<PatchManager>();
+        sessionManager = GetComponent<SessionManager>();
         boxObj.SetActive(false);
         leaveStayDecisionScreen.SetActive(false);
         trainingAFeedbackScreen.SetActive(false);
 }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Debug.Log("Esc Key pressed");
+        }
+    }
 
 
     private void InitLogFile()
@@ -65,6 +63,10 @@ public class GameManager : MonoBehaviour
     // need to block all input apart from clicks/ presses in game start screen
     // make a mob friendly tap as a spacebar alternative 
 
+    // if WebGL then set eegOptions as unavaiable
+
+    // log files init: HOW. eeg HOW. 
+
     private void Start()
     {
         InitLogFile();
@@ -74,36 +76,26 @@ public class GameManager : MonoBehaviour
     public void PressedTrainingA()
 
     {
-        using StreamWriter dataOut = File.AppendText(pathToLog);
-        dataOut.WriteLine("Training A; no decisions recorded " + DateTime.Now.ToString());
-
         startScreen.SetActive(false);
-        patchManager.StartTrainingA();
-
+        sessionManager.StartTrainingA();
     }
 
     public void PressedTrainingB()
     {
-        using StreamWriter dataOut = File.AppendText(pathToLog);
-        dataOut.WriteLine("Training B; no decisions recorded " + DateTime.Now.ToString());
-
         startScreen.SetActive(false);
-        patchManager.StartTrainingB();
+        sessionManager.StartTrainingB();
     }
 
     public void PressedTrainingC()
     {
-        using StreamWriter dataOut = File.AppendText(pathToLog);
-        dataOut.WriteLine("Training C" + DateTime.Now.ToString());
-
         startScreen.SetActive(false);
-        patchManager.StartTrainingC();
+        sessionManager.StartTrainingC();
     }
 
     public void PressedRunTask()
     {
         startScreen.SetActive(false);
-        patchManager.StartTask();
+        sessionManager.StartTask();
     }
 
     public void EndSession()
