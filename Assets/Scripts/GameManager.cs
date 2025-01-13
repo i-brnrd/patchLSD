@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System;
 using System.IO;
 using TMPro;
-
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     // GameData Objects 
     public GameObject gameData;
     public GameObject startScreen;
-
+    public GameObject pauseScreen;
     // Patch
     private SessionManager sessionManager;
 
@@ -33,10 +33,12 @@ public class GameManager : MonoBehaviour
     public GameObject playInputs;
 
     public Button taskButton;
+    public TMP_Text taskText;
     public Toggle eegToggle;
     public TMP_InputField participantID;
     public Toggle resumeToggle;
 
+    public bool isPaused = false;
 
     public bool eegStreamOn = false;
     public bool resumeParticipant = false;
@@ -52,27 +54,41 @@ public class GameManager : MonoBehaviour
         boxObj.SetActive(false);
         leaveStayDecisionScreen.SetActive(false);
         trainingAFeedbackScreen.SetActive(false);
-}
+        pauseScreen.SetActive(false);
+
+
+#if UNITY_WEBGL
+    // Hide EEG/resume toggles and participant ID input
+    eegToggle.gameObject.SetActive(false);
+    resumeToggle.gameObject.SetActive(false);
+    participantID.gameObject.SetActive(false);
+    taskText.gameObject.SetActive(false);
+#endif
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.Log("Esc Key pressed");
+            isPaused = true;
+            pauseScreen.SetActive(true);
         }
     }
 
-    // need to block all input apart from clicks/ presses in game start screen
-    // make a mob friendly tap as a spacebar alternative 
-
     // if WebGL then set eegOptions as unavaiable
-
-    // log files init: HOW. eeg HOW. 
 
     private void Start()
     {
+        SetStartState();
+       startScreen.SetActive(true);
+    }
+
+    private void SetStartState()
+    {
+        isPaused = false;
+        eegStreamOn = false;
+        resumeParticipant = false;
         ToggleTrainingInputs(true);
         TogglePlayInputs(false);
-        startScreen.SetActive(true);
     }
 
     public void PressedTrainingA()
@@ -96,11 +112,11 @@ public class GameManager : MonoBehaviour
 
     public void PressedRunTask()
     {
-        if (eegToggle.isOn)
+        if (eegToggle != null && eegToggle.isOn)
         {
             eegStreamOn = true;
         }
-        if (resumeToggle.isOn)
+        if (resumeToggle != null && resumeToggle.isOn)
         {
             resumeParticipant = true;
         }
@@ -114,7 +130,23 @@ public class GameManager : MonoBehaviour
 
     public void EndSession()
     {
+        SetStartState();
+        pauseScreen.SetActive(false);
         startScreen.SetActive(true);
+    }
+
+    public void ResumeSession()
+    {
+        StartCoroutine(ResumeDelay());
+       
+    }
+
+    private IEnumerator ResumeDelay()
+    {
+        yield return new WaitForSeconds(0.4f);
+        isPaused = false;
+        pauseScreen.SetActive(false);
+        // Optionally, you can reset the pause flag here if not handled in SessionManager
     }
 
     // will want to smarten up and make sure all inactive at start 
@@ -122,16 +154,24 @@ public class GameManager : MonoBehaviour
 
     private void ParticipantFolder()
     {
-        string folderName; 
-        if (string.IsNullOrWhiteSpace(participantID.text))
+        string folderName;
+        if (!participantID.IsActive())
         {
-            // If it's empty we will use a datetime UUID 
+            Debug.Log("INACTIVE");
+            // If it's empty or null (ie Web GL) we will use a datetime ticks UUID 
+            folderName = string.Format(@"{0}.txt", DateTime.Now.Ticks);
+        }
+        else if (string.IsNullOrWhiteSpace(participantID.text))
+        {
+            // If it's empty or null (ie Web GL) we will use a datetime ticks UUID 
             folderName = string.Format(@"{0}.txt", DateTime.Now.Ticks);
         }
         else
         {
             folderName = participantID.text;
         }
+
+
 
         pathToFolder = Path.Combine(Application.persistentDataPath, folderName);
 
@@ -142,15 +182,6 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Path to patient folder " + pathToFolder);
     }
-
-
-    //public void SaveData(string[] stringToSave)
-    //{
-    //    string dataToWrite = string.Join(",", stringToSave);
-    //    Debug.Log("Writing out: " + dataToWrite);
-    //    using StreamWriter dataOut = File.AppendText(pathToChoiceData);
-    //    dataOut.WriteLine(dataToWrite);
-    //}
 
     private void InitLogs()
     {
@@ -164,9 +195,9 @@ public class GameManager : MonoBehaviour
         pathToChoiceData = Path.Combine(pathToFolder, choiceDataFileName);
         pathToRew2LD = Path.Combine(pathToFolder, rew2ldFileName);
 
-        string choiceDataHeader = "Task Initialised/ Resumed at: " + currentTime + "\n" + "Trial, Leave?(bool)";
+        string choiceDataHeader = "Task Initialised/ Resumed at: " + currentTime + "\n" + "Trial, Leave?(bool) \n";
 
-        string rew2ldHeader ="Task Initialised/ Resumed at: " + currentTime + "\n" +"Rewards (the given patch) to Leave/Stay Decision";
+        string rew2ldHeader ="Task Initialised/ Resumed at: " + currentTime + "\n" +"Rewards (the given patch) to Leave/Stay Decision \n";
 
         File.WriteAllText(pathToChoiceData, choiceDataHeader);
         File.WriteAllText(pathToRew2LD, rew2ldHeader);
@@ -184,6 +215,8 @@ public class GameManager : MonoBehaviour
 
     public void TogglePlayInputs(bool isOn)
     {
+        taskButton.interactable = isOn;
+
         if (isOn)
         {
             eegToggle.interactable = true;
@@ -199,7 +232,7 @@ public class GameManager : MonoBehaviour
             participantID.text = string.Empty;
         }
 
-        taskButton.interactable = isOn;
+        
         participantID.interactable = isOn;
     }
 

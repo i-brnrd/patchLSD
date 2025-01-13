@@ -41,8 +41,6 @@ public class SessionManager : MonoBehaviour
     public bool inChoicePhase = false; //choice phase 
     public bool? leave = null; //nullable bool. Null: not decided; leave = true, left; leave = false; stay 
  
-    public bool inTraining = true; 
-
 
     private void Awake()
     {
@@ -62,12 +60,9 @@ public class SessionManager : MonoBehaviour
 
     }
     // Session Flow Methods
-    // task trunations need to be randomised
-    // pause at start needs to be understood (check)
-
+  
     public void StartTask()
     {
-        inTraining = false;
         eegStream.StartLSL();
         eegStream.LogMessage("Task Started");
 
@@ -86,7 +81,6 @@ public class SessionManager : MonoBehaviour
     private void SetTrialAndPatchOrder()
     {
         // if not resuming, set trialIdx as 0; and get a new patch & truncation order
-        // and SAVE PATCH & TRUNCATION ORDER 
         if (!gameManager.resumeParticipant)
         {
             trialIdx = 0;
@@ -96,7 +90,7 @@ public class SessionManager : MonoBehaviour
 
         } else
         {
-            // if resuming, load in trial, patch & truncation order from GameManager where Ive got them.
+            // if resuming, load in trial, patch & truncation order from saved.
             Resume();
         }
        
@@ -104,7 +98,6 @@ public class SessionManager : MonoBehaviour
 
     public void StartTrainingA()
     {
-        // FIX CHOICE OF ENVS TO SEE RANDOM?
         StartCoroutine(trainingAController.RunTrainingA());
     }
 
@@ -115,7 +108,6 @@ public class SessionManager : MonoBehaviour
 
     public void StartTrainingC()
     {
-        // FIX RANDOMISATION CALL?
         StartCoroutine(trainingCController.RunTrainingC());
     }
 
@@ -136,17 +128,17 @@ public class SessionManager : MonoBehaviour
         float ldGoSum = patchData.ldGo[patchIdx].Sum();
         float ldStaySum = patchData.ldStay[patchIdx].Sum();
 
-        float points = 0.0f;
+        float points;
 
         if (leave == true)
         {
 
-            points = ldGoSum - ldStaySum;
+          points = ldGoSum - ldStaySum;
 
         }
         else
         {
-            points = ldStaySum - ldGoSum;
+           points = ldStaySum - ldGoSum;
         }
 
         int pointsAsInt = Mathf.RoundToInt(points * 100);
@@ -237,13 +229,13 @@ public class SessionManager : MonoBehaviour
     {
         string[] choicesToWrite = { (trialIdx + 1).ToString(), (patchIdx + 1).ToString(), leave.ToString() };
         string dataToWrite = string.Join(",", choicesToWrite);
-        File.AppendAllText(gameManager.pathToChoiceData, dataToWrite);
+        File.AppendAllText(gameManager.pathToChoiceData, dataToWrite + "\n");
     }
 
     public void WriteOutRewards(float[] rewards)
     {
         string dataToWrite = string.Join(",", rewards.Select(r => r.ToString()).ToArray());
-        File.AppendAllText(gameManager.pathToRew2LD, dataToWrite);
+        File.AppendAllText(gameManager.pathToRew2LD, dataToWrite + "\n");
     
     }
 

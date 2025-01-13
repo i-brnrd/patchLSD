@@ -5,6 +5,7 @@ public class PatchPresenter : MonoBehaviour
 {
     public GameObject boxObject;
     public GameObject fixation;
+    public GameManager gameManager;
 
     private EegStream eegStream;
     private Box box;
@@ -25,6 +26,8 @@ public class PatchPresenter : MonoBehaviour
     {
        box  = boxObject.GetComponent<Box>();
        eegStream = GetComponent<EegStream>();
+       gameManager = GetComponent<GameManager>();
+        
     }
 
     public IEnumerator StartPatch(float[] rewardsArray, bool useBlueEnv, int trialIndex, int patchIndex)
