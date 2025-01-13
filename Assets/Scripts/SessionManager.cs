@@ -1,4 +1,5 @@
 using System.Collections;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using System.Linq;
@@ -69,20 +70,41 @@ public class SessionManager : MonoBehaviour
         inTraining = false;
         eegStream.StartLSL();
         eegStream.LogMessage("Task Started");
+
+        SetTrialAndPatchOrder();
         StartCoroutine(RunTask());
     }
 
     private IEnumerator RunTask()
     {
-        patchOrder = patchUtils.GeneratePatchOrder();
-        truncationOrder = patchUtils.GenerateTruncations();
+        
         yield return StartCoroutine(taskController.RunTask());
         eegStream.StopLSL(); // stops when task is really done
     }
 
+
+    private void SetTrialAndPatchOrder()
+    {
+        // if not resuming, set trialIdx as 0; and get a new patch & truncation order
+        // and SAVE PATCH & TRUNCATION ORDER 
+        if (!gameManager.resumeParticipant)
+        {
+            trialIdx = 0;
+            patchOrder = patchUtils.GeneratePatchOrder();
+            truncationOrder = patchUtils.GenerateTruncations();
+            WriteOutPatchOrders();
+
+        } else
+        {
+            // if resuming, load in trial, patch & truncation order from GameManager where Ive got them.
+            Resume();
+        }
+       
+    }
+
     public void StartTrainingA()
     {
-        // FIX COICCE OF ENVS TO SEE RANDOM 
+        // FIX CHOICE OF ENVS TO SEE RANDOM?
         StartCoroutine(trainingAController.RunTrainingA());
     }
 
@@ -93,7 +115,7 @@ public class SessionManager : MonoBehaviour
 
     public void StartTrainingC()
     {
-        // FIX RANDOMISATION CALL 
+        // FIX RANDOMISATION CALL?
         StartCoroutine(trainingCController.RunTrainingC());
     }
 
@@ -213,8 +235,46 @@ public class SessionManager : MonoBehaviour
 
     public void WriteOutLSD()
     {
-        string[] choiceToWrite = { (trialIdx + 1).ToString(), (patchIdx + 1).ToString(), leave.ToString() };
-        gameManager.SaveData(choiceToWrite);
+        string[] choicesToWrite = { (trialIdx + 1).ToString(), (patchIdx + 1).ToString(), leave.ToString() };
+        string dataToWrite = string.Join(",", choicesToWrite);
+        File.AppendAllText(gameManager.pathToChoiceData, dataToWrite);
+    }
+
+    public void WriteOutRewards(float[] rewards)
+    {
+        string dataToWrite = string.Join(",", rewards.Select(r => r.ToString()).ToArray());
+        File.AppendAllText(gameManager.pathToRew2LD, dataToWrite);
+    
+    }
+
+    public void WriteState()
+    {
+        Debug.Log("In Write State" + trialIdx.ToString());
+        File.WriteAllText(Path.Combine(gameManager.pathToFolder, "state.txt"), trialIdx.ToString());
+
+    }
+
+    public void WriteOutPatchOrders()
+    {
+        string orderString = string.Join(",", patchOrder);
+        File.WriteAllText(Path.Combine(gameManager.pathToFolder, "patchOrder.txt"), orderString);
+        string truncationString = string.Join(",", truncationOrder);
+        File.WriteAllText(Path.Combine(gameManager.pathToFolder, "truncationOrder.txt"), truncationString);
+    }
+
+
+    public void Resume()
+    {
+        string orderString = File.ReadAllText(Path.Combine(gameManager.pathToFolder, "patchOrder.txt"));
+        patchOrder = orderString.Split(',').Select(int.Parse).ToArray();
+
+        string truncationString = File.ReadAllText(Path.Combine(gameManager.pathToFolder, "truncationOrder.txt"));
+        truncationOrder = truncationString.Split(',').Select(bool.Parse).ToArray();
+
+
+        string idxString = File.ReadAllText(Path.Combine(gameManager.pathToFolder, "state.txt"));
+        trialIdx = int.Parse(idxString);
+     
     }
 
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EegStream : MonoBehaviour
 {
-    // Idea here is to gate the LSL code via an eegFlag set at start. 
+    // Idea here is to gate the LSL code via an eegStreamOn set at start. 
     // (disable for all webGL builds)
 
     private LSLStream lslStream;
@@ -21,7 +21,7 @@ public class EegStream : MonoBehaviour
 
     public void StartLSL()
     {
-        if (gameManager.eegFlag)
+        if (gameManager.eegStreamOn)
         {
             eegStreamOn = true;
             lslStream.StreamStart();
@@ -31,7 +31,7 @@ public class EegStream : MonoBehaviour
 
     public void StopLSL()
     {
-        if (gameManager.eegFlag)
+        if (gameManager.eegStreamOn)
         {
             eegStreamOn = false;
             lslStream.StreamStop();
@@ -45,7 +45,7 @@ public class EegStream : MonoBehaviour
     public void LogMessage(string message) // core stream log method 
     {
         Debug.Log(message);
-        if (gameManager.eegFlag && eegStreamOn)
+        if (gameManager.eegStreamOn && eegStreamOn)
         {
             if (lslStream != null)
             {

@@ -11,7 +11,6 @@ public class TaskController : MonoBehaviour
 
     private bool useBlueEnv = true;
 
-    private int trialIdx = 0;
     private int maxTrials = 90;
 
     private int[] patchOrder;
@@ -34,6 +33,7 @@ public class TaskController : MonoBehaviour
  
     public IEnumerator RunTask()
     {
+        Debug.Log("In RunTask:::" + sessionManager.trialIdx.ToString());
         int[] accumPointsFeedback = { Mathf.FloorToInt(maxTrials / 4), Mathf.FloorToInt(maxTrials / 2), Mathf.FloorToInt((maxTrials * 3) / 4) };
 
         patchOrder = sessionManager.patchOrder;
@@ -44,15 +44,15 @@ public class TaskController : MonoBehaviour
        
         sessionManager.useBlueEnv = useBlueEnv;
 
-        while (trialIdx < maxTrials)
+        while (sessionManager.trialIdx < maxTrials)
         {
             // get patch
-            sessionManager.patchIdx = patchOrder[trialIdx];
+            sessionManager.patchIdx = patchOrder[sessionManager.trialIdx];
             sessionManager.leave = null;
 
             rewards = sessionManager.SetPatch(); 
                        
-            yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, trialIdx, sessionManager.patchIdx));
+            yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, sessionManager.trialIdx, sessionManager.patchIdx));
 
             if (sessionManager.leave == null)
             {
@@ -65,24 +65,27 @@ public class TaskController : MonoBehaviour
 
             // write out decision via session manager 
             sessionManager.WriteOutLSD();
+            sessionManager.WriteOutRewards(rewards);
+           
 
-            if (!truncationOrder[trialIdx])
+            if (!truncationOrder[sessionManager.trialIdx])
             {
                 rewards = sessionManager.SetPatch();
-                yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv,trialIdx, sessionManager.patchIdx));
+                yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv,sessionManager.trialIdx, sessionManager.patchIdx));
             }
 
             points = sessionManager.GetPoints();
             accumulatedPoints += points;
-            yield return StartCoroutine(sessionManager.ShowPointsTrial(trialIdx, points));
+            yield return StartCoroutine(sessionManager.ShowPointsTrial(sessionManager.trialIdx, points));
 
 
-            if (accumPointsFeedback.Contains(trialIdx))
+            if (accumPointsFeedback.Contains(sessionManager.trialIdx))
             {
                 yield return StartCoroutine(sessionManager.ShowAccumulatedPoints(accumulatedPoints));
             }
 
-            trialIdx++;
+            sessionManager.trialIdx++;
+            sessionManager.WriteState();
         }
 
         StartCoroutine(sessionManager.EndSession("End of Task"));
