@@ -53,7 +53,6 @@ public class SessionManager : MonoBehaviour
         trainingBController = GetComponent<TrainingBController>();
         trainingCController = GetComponent<TrainingCController>();
 
-
     }
     // Session Flow Methods
     // Training A, B & C 
@@ -238,6 +237,13 @@ public class SessionManager : MonoBehaviour
         }
 
         continueText.gameObject.SetActive(true);
+
+        // if WebGL; tell them they can tap/ mouseclick
+#if UNITY_WEBGL
+        continueText.text = "Press Spacebar or tap to continue";
+        continueText.fontSize = 100;
+#endif
+
 
         //while (!Input.GetKeyDown(KeyCode.Space))
         //{

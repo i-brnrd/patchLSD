@@ -874,7 +874,6 @@ MonoBehaviour:
   trainingToggle: {fileID: 455411956}
   playToggle: {fileID: 1483689647}
   trainingInputs: {fileID: 2090040017}
-  playInputs: {fileID: 1826268189}
   taskButton: {fileID: 1394920888}
   taskText: {fileID: 1088236746}
   eegToggle: {fileID: 351304323}
@@ -883,9 +882,9 @@ MonoBehaviour:
   isPaused: 0
   eegStreamOn: 0
   resumeParticipant: 0
-  pathToFolder: 
-  pathToChoiceData: 
-  pathToRew2LD: 
+  pathToPiDFolder: 
+  pathToStateFolder: 
+  pathToBehaviouralFolder: 
 --- !u!4 &305056124
 Transform:
   m_ObjectHideFlags: 0
@@ -949,7 +948,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6335795c9375b4f5ca090f392ef3841c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewards: []
 --- !u!114 &305056131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1005,13 +1003,10 @@ MonoBehaviour:
   intertrialScreen: {fileID: 1227706539}
   optionalText: {fileID: 989376378}
   continueText: {fileID: 1511561464}
-  trialIdx: 0
-  patchIdx: 0
+  inChoicePhase: 0
+  startTrialsAt: 0
   patchOrder: 
   truncationOrder: 
-  rewards: []
-  useBlueEnv: 1
-  inChoicePhase: 0
 --- !u!114 &305056135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1026,7 +1021,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boxObject: {fileID: 2008139722}
   fixation: {fileID: 239369701}
-  gameManager: {fileID: 0}
 --- !u!1 &307739430
 GameObject:
   m_ObjectHideFlags: 0
@@ -5147,7 +5141,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 883.2001}
+  m_SizeDelta: {x: 0, y: 613.1614}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1227706541
 MonoBehaviour:
@@ -6363,7 +6357,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press Spacebar to Continue
+  m_text: Press Spacebar to continue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
