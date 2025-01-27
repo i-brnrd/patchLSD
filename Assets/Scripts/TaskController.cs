@@ -9,19 +9,14 @@ public class TaskController : MonoBehaviour
     private SessionManager sessionManager;
     private PatchPresenter patchPresenter;
 
-    private bool useBlueEnv = true;
-
     private int maxTrials = 90;
-
-    private int[] patchOrder;
-    private bool[] truncationOrder;
-
+    int patchIndex;
+    bool? leave;
+ 
     int points;
     int accumulatedPoints;
 
-    public float[] rewards;
-
-
+    private float[] rewards;
 
     private void Awake()
     {
@@ -29,63 +24,67 @@ public class TaskController : MonoBehaviour
         patchPresenter = GetComponent<PatchPresenter>();
     }
 
-    // get in the 
- 
-    public IEnumerator RunTask()
-    {
-        Debug.Log("In RunTask:::" + sessionManager.trialIdx.ToString());
-        int[] accumPointsFeedback = { Mathf.FloorToInt(maxTrials / 4), Mathf.FloorToInt(maxTrials / 2), Mathf.FloorToInt((maxTrials * 3) / 4) };
 
-        patchOrder = sessionManager.patchOrder;
-        truncationOrder = sessionManager.truncationOrder;
+    public IEnumerator RunTask(int trialIndex, int [] patchOrder, bool [] truncationOrder)
+    {
+        
+        Debug.Log("In RunTask:::" + trialIndex.ToString());
+
+        int[] accumPointsFeedback = { Mathf.FloorToInt(maxTrials / 4), Mathf.FloorToInt(maxTrials / 2), Mathf.FloorToInt((maxTrials * 3) / 4) };
 
         yield return new WaitForSeconds(1.0f);
         yield return StartCoroutine(sessionManager.Intertrial("Starting Task"));
        
-        sessionManager.useBlueEnv = useBlueEnv;
-
-        while (sessionManager.trialIdx < maxTrials)
+        while (trialIndex < maxTrials)
         {
             // get patch
-            sessionManager.patchIdx = patchOrder[sessionManager.trialIdx];
-            sessionManager.leave = null;
+            patchIndex = patchOrder[trialIndex];
+            leave = null;
 
-            rewards = sessionManager.SetPatch(); 
-                       
-            yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, sessionManager.trialIdx, sessionManager.patchIdx));
+            rewards = sessionManager.SetPatch(leave, patchIndex);
+            yield return StartCoroutine(patchPresenter.StartPatch(rewards, leave, trialIndex, patchIndex));
 
-            if (sessionManager.leave == null)
+            // After the patch is complete, decide what to do next
+            if (leave == null)
             {
                 sessionManager.BeginChoicePhase();
-                while (sessionManager.leave == null)
+                while (sessionManager.leaveDecision == null)
                 {
                     yield return null;
                 }
+                leave = sessionManager.leaveDecision;
+                sessionManager.leaveDecision = null;
             }
 
             // write out decision via session manager 
-            sessionManager.WriteOutLSD();
-            sessionManager.WriteOutRewards(rewards);
-           
+            sessionManager.WriteOutLSD(leave, trialIndex, patchIndex);
 
-            if (!truncationOrder[sessionManager.trialIdx])
+            if (!truncationOrder[trialIndex])
             {
-                rewards = sessionManager.SetPatch();
-                yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv,sessionManager.trialIdx, sessionManager.patchIdx));
+                rewards = sessionManager.SetPatch(leave, patchIndex);
+                yield return StartCoroutine(patchPresenter.StartPatch(rewards, leave, trialIndex, patchIndex));
             }
 
-            points = sessionManager.GetPoints();
+            sessionManager.WriteOutRewards(leave, trialIndex, patchIndex);
+
+
+            points = sessionManager.GetPoints(leave, patchIndex);
             accumulatedPoints += points;
-            yield return StartCoroutine(sessionManager.ShowPointsTrial(sessionManager.trialIdx, points));
 
+            trialIndex++;
+            sessionManager.WriteState(trialIndex);
 
-            if (accumPointsFeedback.Contains(sessionManager.trialIdx))
+            yield return StartCoroutine(sessionManager.ShowPointsTrial((trialIndex-1), points));
+
+           
+
+            if (accumPointsFeedback.Contains(trialIndex))
             {
                 yield return StartCoroutine(sessionManager.ShowAccumulatedPoints(accumulatedPoints));
             }
 
-            sessionManager.trialIdx++;
-            sessionManager.WriteState();
+           
+
         }
 
         StartCoroutine(sessionManager.EndSession("End of Task"));

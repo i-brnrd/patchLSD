@@ -12,7 +12,10 @@ public class TrainingAController : MonoBehaviour
     private TrainingAFeedback trainingAFeedback;
 
 
-    private int trialIdx = 0;
+    private int trialIndex;
+    private int patchIndex;
+    private bool inChoicePhase;
+    private bool? leave = true;
 
     private float[] redRewards;
     private float[] blueRewards;
@@ -27,38 +30,42 @@ public class TrainingAController : MonoBehaviour
 
     public IEnumerator RunTrainingA()
     {
-        int[] trialsA = { 18, 42, 86, 27, 65, 39, 76, 4, 13, 53 }; //MATLAB trianing 1 based indexing
+        int[] trialsA = { 17, 41, 85, 26, 64, 38, 75, 3, 12, 52 }; //change 
 
-        while (trialIdx < trialsA.Length)
+        trialIndex = 0;
+
+        while (trialIndex < trialsA.Length)
         {
-            if (trialIdx == 0)
+            if (trialIndex == 0)
             {
-                yield return StartCoroutine(sessionManager.Intertrial("Start of Training (A)", 0.5f));
+                yield return StartCoroutine(sessionManager.Intertrial("Start of Training A", 0.5f));
             }
             else
             {
                 yield return StartCoroutine(sessionManager.Intertrial());
             }
+            leave = true;
+            patchIndex = trialsA[trialIndex];
 
-            sessionManager.leave = true;
-            sessionManager.patchIdx = trialsA[trialIdx] - 1; //c# 0 based
-            redRewards = sessionManager.SetPatch(); //sets patch  
+            redRewards = sessionManager.SetPatch(leave,patchIndex); //sets patch  
 
-            yield return StartCoroutine(patchPresenter.StartPatch(redRewards, sessionManager.useBlueEnv, trialIdx, sessionManager.patchIdx));
+            yield return StartCoroutine(patchPresenter.StartPatch(redRewards, leave, trialIndex, patchIndex));
             yield return StartCoroutine(sessionManager.Intertrial());
 
 
-            sessionManager.leave = null;
-            sessionManager.patchIdx = trialsA[trialIdx] - 1; //c# 0 based
-            blueRewards = sessionManager.SetPatch();
+            leave = false;
+            patchIndex = trialsA[trialIndex];
+            blueRewards = sessionManager.SetPatch(leave, patchIndex);
 
-            yield return StartCoroutine(patchPresenter.StartPatch(blueRewards, sessionManager.useBlueEnv, trialIdx, sessionManager.patchIdx));
+            yield return StartCoroutine(patchPresenter.StartPatch(blueRewards, leave, trialIndex, patchIndex));
 
-            sessionManager.inChoicePhase = true;
+            leave = null; // resetting leave to null 
+            inChoicePhase = true;
             trainingAFeedbackScreen.SetActive(true);
+
             yield return StartCoroutine(trainingAFeedback.Choice());
 
-            while (sessionManager.inChoicePhase == true) // wait til the participant returns a choice 
+            while (inChoicePhase == true) // wait til the participant returns a choice 
             {
                 yield return null;
             }
@@ -67,7 +74,7 @@ public class TrainingAController : MonoBehaviour
             float redSum = redRewards.Sum();
             float blueSum = blueRewards.Sum();
 
-            if ((redSum > blueSum & (sessionManager.leave ?? false)) || (blueSum > redSum & (!sessionManager.leave ?? false)))
+            if ((redSum > blueSum & (leave ?? false)) || (blueSum > redSum & (!leave ?? false)))
             {
                 yield return StartCoroutine(sessionManager.Intertrial("You made the correct decision"));
             }
@@ -76,16 +83,16 @@ public class TrainingAController : MonoBehaviour
                 yield return StartCoroutine(sessionManager.Intertrial("You made the wrong decision"));
             }
 
-            trialIdx++;
+            trialIndex++;
         }
+        StartCoroutine(sessionManager.EndSession("End of Training A"));
     }
 
-    public void TrainingAChoice(bool red)
+    public void TrainingAChoice(bool choseLeave)
     {
-        Debug.Log("Training A: leave? " + red.ToString());
         trainingAFeedbackScreen.SetActive(false);
-        sessionManager.inChoicePhase = false;
-        sessionManager.leave = red;
+        inChoicePhase = false;
+        leave = choseLeave;
     }
 }
 

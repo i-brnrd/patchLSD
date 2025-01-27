@@ -5,7 +5,6 @@ public class PatchPresenter : MonoBehaviour
 {
     public GameObject boxObject;
     public GameObject fixation;
-    public GameManager gameManager;
 
     private EegStream eegStream;
     private Box box;
@@ -26,15 +25,22 @@ public class PatchPresenter : MonoBehaviour
     {
        box  = boxObject.GetComponent<Box>();
        eegStream = GetComponent<EegStream>();
-       gameManager = GetComponent<GameManager>();
         
     }
 
-    public IEnumerator StartPatch(float[] rewardsArray, bool useBlueEnv, int trialIndex, int patchIndex)
+    public IEnumerator StartPatch(float[] rewardsArray, bool? leave, int trialIndex, int patchIndex)
     {
         eventIdx = 0;
         rewards = rewardsArray;
-        inBlueEnv = useBlueEnv;
+
+        if (leave == true)
+        {
+            inBlueEnv = false;
+        }
+        else
+        {
+            inBlueEnv = true;
+        }
 
         trialIdx = trialIndex;
         patchIdx = patchIndex;
@@ -48,7 +54,17 @@ public class PatchPresenter : MonoBehaviour
     private IEnumerator InterEvent()
     {
         fixation.SetActive(true);
-        while (!Input.GetKeyDown(KeyCode.Space) && !Input.GetMouseButtonDown(0))
+        //while (!Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    yield return null;
+        //}
+
+        while (
+    !Input.GetKeyDown(KeyCode.Space)
+#if UNITY_WEBGL
+    && !Input.GetMouseButtonDown(0)
+#endif
+)
         {
             yield return null;
         }

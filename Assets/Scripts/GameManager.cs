@@ -4,12 +4,12 @@ using System;
 using System.IO;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
 
     // GameData Objects 
-    public GameObject gameData;
     public GameObject startScreen;
     public GameObject pauseScreen;
     // Patch
@@ -20,17 +20,7 @@ public class GameManager : MonoBehaviour
     public Toggle playToggle;
 
     // GameObjects 
-    public LSD LSD;
-
-    public GameObject boxObj; // object 
-    public GameObject fixationCross;
-
-    public GameObject leaveStayDecisionScreen;
-    public GameObject trainingAFeedbackScreen;
-    public GameObject intertrialScreen;
-
     public GameObject trainingInputs;
-    public GameObject playInputs;
 
     public Button taskButton;
     public TMP_Text taskText;
@@ -43,42 +33,42 @@ public class GameManager : MonoBehaviour
     public bool eegStreamOn = false;
     public bool resumeParticipant = false;
 
-    // Path To Logs
-    public string pathToFolder;
-    public string pathToChoiceData;
-    public string pathToRew2LD;
+    // Path To Logs 
+    public string pathToPiDFolder;
+    public string pathToStateFolder;
+    public string pathToBehaviouralFolder;
 
     private void Awake()
     {
         sessionManager = GetComponent<SessionManager>();
-        boxObj.SetActive(false);
-        leaveStayDecisionScreen.SetActive(false);
-        trainingAFeedbackScreen.SetActive(false);
-        pauseScreen.SetActive(false);
-
-
+        // For a WebGL build; hide EEG/resume toggles and participant ID input; & move the start task button. 
 #if UNITY_WEBGL
-    // Hide EEG/resume toggles and participant ID input
+    // Hide EEG/resume toggles and participant ID input; & move the start task button. 
     eegToggle.gameObject.SetActive(false);
     resumeToggle.gameObject.SetActive(false);
     participantID.gameObject.SetActive(false);
     taskText.gameObject.SetActive(false);
+    taskButton.transform.localPosition = taskButton.transform.localPosition + new Vector3(0, 250, 0);
 #endif
+
     }
-    private void Update()
+
+
+
+    private void Update() //No pause screen on Esc in WebGL 
     {
+#if !UNITY_WEBGL
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isPaused = true;
             pauseScreen.SetActive(true);
         }
+#endif
     }
-
-    // if WebGL then set eegOptions as unavaiable
 
     private void Start()
     {
-        SetStartState();
+       SetStartState();
        startScreen.SetActive(true);
     }
 
@@ -87,6 +77,7 @@ public class GameManager : MonoBehaviour
         isPaused = false;
         eegStreamOn = false;
         resumeParticipant = false;
+
         ToggleTrainingInputs(true);
         TogglePlayInputs(false);
     }
@@ -121,7 +112,7 @@ public class GameManager : MonoBehaviour
             resumeParticipant = true;
         }
 
-        ParticipantFolder();
+        PiDFolders();
 
         InitLogs();
         startScreen.SetActive(false);
@@ -130,9 +121,7 @@ public class GameManager : MonoBehaviour
 
     public void EndSession()
     {
-        SetStartState();
-        pauseScreen.SetActive(false);
-        startScreen.SetActive(true);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void ResumeSession()
@@ -146,25 +135,21 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
         isPaused = false;
         pauseScreen.SetActive(false);
-        // Optionally, you can reset the pause flag here if not handled in SessionManager
     }
 
-    // will want to smarten up and make sure all inactive at start 
-
-
-    private void ParticipantFolder()
+    private void PiDFolders()
     {
         string folderName;
+
         if (!participantID.IsActive())
         {
-            Debug.Log("INACTIVE");
             // If it's empty or null (ie Web GL) we will use a datetime ticks UUID 
-            folderName = string.Format(@"{0}.txt", DateTime.Now.Ticks);
+            folderName = string.Format(@"{0}", shortUUID());
         }
         else if (string.IsNullOrWhiteSpace(participantID.text))
         {
             // If it's empty or null (ie Web GL) we will use a datetime ticks UUID 
-            folderName = string.Format(@"{0}.txt", DateTime.Now.Ticks);
+            folderName = string.Format(@"{0}", shortUUID());
         }
         else
         {
@@ -172,35 +157,47 @@ public class GameManager : MonoBehaviour
         }
 
 
+        pathToPiDFolder = Path.Combine(Application.persistentDataPath, folderName);
 
-        pathToFolder = Path.Combine(Application.persistentDataPath, folderName);
-
-        if (!Directory.Exists(pathToFolder))
+        if (!Directory.Exists(pathToPiDFolder))
         {
-            Directory.CreateDirectory(pathToFolder);
+            Directory.CreateDirectory(pathToPiDFolder);
         }
 
-        Debug.Log("Path to patient folder " + pathToFolder);
+        
+        pathToStateFolder = Path.Combine(pathToPiDFolder, "STATE");
+        if (!Directory.Exists(pathToStateFolder))
+        {
+            Directory.CreateDirectory(pathToStateFolder);
+        }
+
+
+        Debug.Log("Path to PiD Data " + pathToPiDFolder);
+        Debug.Log("Path to State Data " + pathToStateFolder);
     }
+
+    private string shortUUID()
+    {
+        long ticks_since_local_epoch;
+        DateTime local_epoch = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        ticks_since_local_epoch = DateTime.UtcNow.Ticks - local_epoch.Ticks;
+
+        return ticks_since_local_epoch.ToString();
+    }
+
 
     private void InitLogs()
     {
-
+        
         DateTime currentTime = DateTime.Now;
-        string timeStamp = currentTime.ToString("yyyy.MM.dd.HH.mm.ss");
+        string timeStamp = currentTime.ToString("yyyy_MM_dd_HH_mm_ss");
 
-        string choiceDataFileName = "ChoiceData_" + timeStamp + ".txt";
-        string rew2ldFileName = "Rew2Ld_" + timeStamp + ".txt";
+        pathToBehaviouralFolder = Path.Combine(pathToPiDFolder, "DATA_"+ timeStamp );
+      
+        Directory.CreateDirectory(pathToBehaviouralFolder);
 
-        pathToChoiceData = Path.Combine(pathToFolder, choiceDataFileName);
-        pathToRew2LD = Path.Combine(pathToFolder, rew2ldFileName);
+        File.WriteAllText(pathToBehaviouralFolder + "/init.log", "Task Initialised/ Resumed at: " + currentTime);
 
-        string choiceDataHeader = "Task Initialised/ Resumed at: " + currentTime + "\n" + "Trial, Leave?(bool) \n";
-
-        string rew2ldHeader ="Task Initialised/ Resumed at: " + currentTime + "\n" +"Rewards (the given patch) to Leave/Stay Decision \n";
-
-        File.WriteAllText(pathToChoiceData, choiceDataHeader);
-        File.WriteAllText(pathToRew2LD, rew2ldHeader);
     }
 
     // Setting interactable status for Play Modes 

@@ -8,6 +8,10 @@ public class TrainingBController : MonoBehaviour
     private SessionManager sessionManager;
     private PatchPresenter patchPresenter;
 
+    private int trialIndex;
+    private int patchIndex;
+    private bool? leave;
+
     private float[] rewards;
 
     private void Awake()
@@ -18,6 +22,7 @@ public class TrainingBController : MonoBehaviour
 
     public IEnumerator RunTrainingB()
     {
+        trialIndex = 0;
         int[] trialsB = { 7, 41, 81 };
 
         int totalSets = 3;
@@ -25,7 +30,7 @@ public class TrainingBController : MonoBehaviour
 
         while (setIdx < totalSets)
         {
-            yield return StartCoroutine(sessionManager.Intertrial($"Start of Training (B) Set {setIdx + 1}"));
+            yield return StartCoroutine(sessionManager.Intertrial($"Start of Training B: Set {setIdx + 1}"));
 
             for (int i = 0; i < trialsB.Length; i++)
             {
@@ -34,17 +39,17 @@ public class TrainingBController : MonoBehaviour
                     yield return StartCoroutine(sessionManager.Intertrial("End of Patch", 0.5f));  // Regular intertrial
                 }
 
-                sessionManager.patchIdx = trialsB[i] - 1; //c# 1 based indexing
+                patchIndex = trialsB[i] - 1; //c# 1 based indexing
 
-                sessionManager.leave = null;
-                rewards = sessionManager.SetPatch();
+                leave = null;
+                rewards = sessionManager.SetPatch(leave, patchIndex);
 
-                yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, i, sessionManager.patchIdx));
+                yield return StartCoroutine(patchPresenter.StartPatch(rewards, leave, trialIndex, patchIndex));
 
-                sessionManager.leave = false;
-                rewards = sessionManager.SetPatch();
+                leave = false;
+                rewards = sessionManager.SetPatch(leave, patchIndex);
 
-                yield return StartCoroutine(patchPresenter.StartPatch(rewards, sessionManager.useBlueEnv, i, sessionManager.patchIdx));
+                yield return StartCoroutine(patchPresenter.StartPatch(rewards, leave, trialIndex, patchIndex));
 
             }
 
@@ -55,7 +60,7 @@ public class TrainingBController : MonoBehaviour
 
             setIdx++; // Increment the set counter
         }
-        StartCoroutine(sessionManager.EndSession("End of Training (B)"));
+        StartCoroutine(sessionManager.EndSession("End of Training B"));
     }
 }
 
