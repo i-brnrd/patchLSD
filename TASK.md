@@ -2,8 +2,7 @@
 
 ### Marco Wittman's Patch Foraging task
 
-
-Work in progress; would be nice if instructions can be added in here to
+The task is designed to test decision maling via a leave stay
 
 
 ## Training
