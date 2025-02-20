@@ -9,7 +9,7 @@ public class TaskController : MonoBehaviour
     private SessionManager sessionManager;
     private PatchPresenter patchPresenter;
 
-    private int maxTrials = 90;
+    private int maxTrials = 2;//private int maxTrials = 90;
     int patchIndex;
     bool? leave;
  
@@ -87,7 +87,8 @@ public class TaskController : MonoBehaviour
 
         }
 
-        StartCoroutine(sessionManager.EndSession("End of Task"));
+        //StartCoroutine(sessionManager.EndSession("End of Task"));
+        sessionManager.EndTASKSession();
     }
     
 }

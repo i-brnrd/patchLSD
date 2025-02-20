@@ -30,7 +30,7 @@ public class TrainingAController : MonoBehaviour
 
     public IEnumerator RunTrainingA()
     {
-        int[] trialsA = { 17, 41, 85, 26, 64, 38, 75, 3, 12, 52 }; //change 
+        int[] trialsA = { 17, 41, 85, 26, 64, 38, 75, 3, 12, 52 }; // selected to give a variety. 
 
         trialIndex = 0;
 

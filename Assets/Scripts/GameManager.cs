@@ -9,9 +9,10 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 
-    // GameData Objects 
+    // Canvas Objects 
     public GameObject startScreen;
     public GameObject pauseScreen;
+
     // Patch
     private SessionManager sessionManager;
 

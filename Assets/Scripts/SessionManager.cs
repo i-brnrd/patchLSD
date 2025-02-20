@@ -26,6 +26,8 @@ public class SessionManager : MonoBehaviour
     public GameObject leaveStayDecisionScreen;
     
     public GameObject intertrialScreen;
+    public GameObject endTaskScreen;
+
     public TMP_Text optionalText;
     public TMP_Text continueText;
 
@@ -121,6 +123,14 @@ public class SessionManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         eegStream.StopLSL();
         gameManager.EndSession();
+    }
+
+    public void EndTASKSession()
+    {
+        
+        endTaskScreen.SetActive(true);
+        //eegStream.StopLSL();
+        //gameManager.EndSession();
     }
 
     public void BeginChoicePhase()
@@ -243,12 +253,6 @@ public class SessionManager : MonoBehaviour
         continueText.text = "Press Spacebar or tap to continue";
         continueText.fontSize = 100;
 #endif
-
-
-        //while (!Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    yield return null;
-        //}
 
         while (
     !Input.GetKeyDown(KeyCode.Space)
