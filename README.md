@@ -21,7 +21,7 @@ A WebGL demo version is available <a  href="https://i-brnrd.github.io/patchLSD/"
 See [here](/TASK) for details on the actual task and programmatic implementation.
 
 ## Getting Started
-If you want to build a version for use in your lab; Download Unity (& dependencies); download this repo & build.\
+To build a version for use in your lab; Download Unity (& dependencies); download this repo & build.\
 If you just want to run through the task, a web demo version is available <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">here</a>;
 
 ### Dependencies
