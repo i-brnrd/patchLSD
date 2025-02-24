@@ -9,7 +9,7 @@ public class TaskController : MonoBehaviour
     private SessionManager sessionManager;
     private PatchPresenter patchPresenter;
 
-    private int maxTrials = 2;//private int maxTrials = 90;
+    private int maxTrials = 90;//private int maxTrials = 90;
     int patchIndex;
     bool? leave;
  
