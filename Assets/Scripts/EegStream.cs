@@ -5,15 +5,17 @@ public class EegStream : MonoBehaviour
     // Idea here is to gate the LSL code via an eegStreamOn set at start. 
     // (disable for all webGL builds)
 
-    private LSLStream lslStream;
+    public GameObject gameManagerObject;
     private GameManager gameManager;
+
+    private LSLStream lslStream;
 
     private bool eegStreamOn = false;
 
     private void Awake()
     {
         lslStream = GetComponent<LSLStream>();
-        gameManager = GetComponent<GameManager>();
+        gameManager = gameManagerObject.GetComponent<GameManager>();
 
     }
 
@@ -38,10 +40,10 @@ public class EegStream : MonoBehaviour
         }
     }
 
-    // Logs.
+    // Eeg Logs: 
     // NB: LogMessage is sufficient; as is lslStream.TriggerLSLEvent(message)
-    // Event-named methods definded here for ease; & eventual porting to Unity Event System? Whatever that is. 
-
+    // For ease; specific methods to send eeg messages for each event are defined here. 
+ 
     public void LogMessage(string message) // core stream log method 
     {
         Debug.Log(message);

@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class TrainingCController : MonoBehaviour
 {
+    public GameObject sessionManagerObject;
     private SessionManager sessionManager;
-    private PatchUtilities patchUtils;
-    private PatchPresenter patchPresenter;
 
+    public GameObject patchObject;
+    private PatchPresenter patchPresenter;
+    private PatchUtilities patchUtils;
     
-    private int maxTrials = 18;
+    private int maxTrials = 18; //only want to run through 18 (one of each).
 
     private int trialIndex;
     private int patchIndex;
@@ -23,9 +25,9 @@ public class TrainingCController : MonoBehaviour
 
     private void Awake()
     {
-        sessionManager = GetComponent<SessionManager>();
-        patchUtils = GetComponent<PatchUtilities>();
-        patchPresenter = GetComponent<PatchPresenter>();
+        sessionManager = sessionManagerObject.GetComponent<SessionManager>();
+        patchUtils = patchObject.GetComponent<PatchUtilities>();
+        patchPresenter = patchObject.GetComponent<PatchPresenter>();
 
     }
 
@@ -74,7 +76,7 @@ public class TrainingCController : MonoBehaviour
 
 
         }
-        StartCoroutine(sessionManager.EndSession("End of Training C"));
+        StartCoroutine(sessionManager.EndTrainingSession("Training C Complete"));
     }
 
 

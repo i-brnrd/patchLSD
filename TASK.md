@@ -51,7 +51,7 @@ First **red** (default) is presented, then **blue** (changing).
 After this, a decision screen is presented to ask which environment the participant prefers.\
 The 10 length matched patches are presented in the order below:
 $$\{18, 42, 86, 27, 65, 39, 76, 4, 13, 53\}$$
-These were selected to give a variety of scenarios (better to leave or stay with varying magnitudes). To alter the patches presented in Training A, change the following in the [controller script](/Assets/Scripts/TrainingAController.cs) (noting C# zero based indices):
+These were selected to give a variety of scenarios (i.e. best decision is either to leave or stay with varying magnitudes). To alter the patches presented in Training A, change the following in the [controller script](/Assets/Scripts/TrainingAController.cs) (noting C# zero based indices):
 
     int[] trialsA = { 17, 41, 85, 26, 64, 38, 75, 3, 12, 52 };
 
@@ -59,12 +59,12 @@ The rewards presented in Training A use [ldgo.csv](/Assets/Resources/RewardData/
 
 ### Training B FINISH:
 Training B aims to familiarise the participants with reward rates.
-Training B (see [script](/Assets/Scripts/TrainingBController.cs)) consists of 3 repeats stepping through full patches (as in, they had no decision they coukd not leave that patch ) of a set of 3 trials
+Training B (see [script](/Assets/Scripts/TrainingBController.cs)) consists of 3 sets of 3 'full' **blue** (changing) patches (as in, they had no decision they coukd not leave that patch ) of a set of 3 trials
 $$\{8, 42, 82\}$$
 
     int[] trialsB = { 7, 41, 81 };
 
-Fruther information is in LINK LINK LINK INSTRUCTIONS and the <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a>; but in summary:
+Fruther information is in the [participant instructions](/Assets/Resources/Instructions/)  and the <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a>; but in summary:
 
 
 The rewards presented in Training A use a full **blue** (changing) patch, so for a given patch runs through [rew2ld.csv](/Assets/Resources/RewardData/rew2ld.csv) and then onto  [ldstay.csv](/Assets/Resources/RewardData/ldstay.csv).

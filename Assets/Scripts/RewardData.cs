@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameData : MonoBehaviour
+public class RewardData : MonoBehaviour
 
 {
     public TextAsset rew2ldCSV;

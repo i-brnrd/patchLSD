@@ -5,11 +5,17 @@ using System.Linq;
 
 public class TaskController : MonoBehaviour
 {
-    
+
+    public GameObject sessionManagerObject;
     private SessionManager sessionManager;
+
+    public GameObject patchObject;
     private PatchPresenter patchPresenter;
 
-    private int maxTrials = 90;//private int maxTrials = 90;
+    public GameObject gameData;
+    private BehaviouralDataIO behaviouralData;
+
+    private int maxTrials = 2;//private int maxTrials = 90;
     int patchIndex;
     bool? leave;
  
@@ -20,15 +26,14 @@ public class TaskController : MonoBehaviour
 
     private void Awake()
     {
-        sessionManager = GetComponent<SessionManager>();
-        patchPresenter = GetComponent<PatchPresenter>();
+        sessionManager = sessionManagerObject.GetComponent<SessionManager>();
+        patchPresenter = patchObject.GetComponent<PatchPresenter>();
+        behaviouralData = gameData.GetComponent<BehaviouralDataIO>();
     }
 
 
     public IEnumerator RunTask(int trialIndex, int [] patchOrder, bool [] truncationOrder)
     {
-        
-        Debug.Log("In RunTask:::" + trialIndex.ToString());
 
         int[] accumPointsFeedback = { Mathf.FloorToInt(maxTrials / 4), Mathf.FloorToInt(maxTrials / 2), Mathf.FloorToInt((maxTrials * 3) / 4) };
 
@@ -57,7 +62,7 @@ public class TaskController : MonoBehaviour
             }
 
             // write out decision via session manager 
-            sessionManager.WriteOutLSD(leave, trialIndex, patchIndex);
+            behaviouralData.WriteOutLSD(leave, trialIndex, patchIndex);
 
             if (!truncationOrder[trialIndex])
             {
@@ -65,14 +70,14 @@ public class TaskController : MonoBehaviour
                 yield return StartCoroutine(patchPresenter.StartPatch(rewards, leave, trialIndex, patchIndex));
             }
 
-            sessionManager.WriteOutRewards(leave, trialIndex, patchIndex);
+            behaviouralData.WriteOutRewards(leave, trialIndex, patchIndex);
 
 
             points = sessionManager.GetPoints(leave, patchIndex);
             accumulatedPoints += points;
 
             trialIndex++;
-            sessionManager.WriteState(trialIndex);
+            behaviouralData.WriteState(trialIndex);
 
             yield return StartCoroutine(sessionManager.ShowPointsTrial((trialIndex-1), points));
 
@@ -83,12 +88,9 @@ public class TaskController : MonoBehaviour
                 yield return StartCoroutine(sessionManager.ShowAccumulatedPoints(accumulatedPoints));
             }
 
-           
-
         }
 
-        //StartCoroutine(sessionManager.EndSession("End of Task"));
-        sessionManager.EndTASKSession();
+        sessionManager.EndTask();
     }
     
 }

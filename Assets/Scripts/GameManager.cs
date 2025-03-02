@@ -8,15 +8,19 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    // Manager Objects with Associated Scripts
+    public GameObject sessionManagerObj;
+    private SessionManager sessionManager;
 
-    // Canvas Objects 
+    public GameObject gameDataObject;
+    private BehaviouralDataIO behaviouralIO;
+
+    // Canvas Objects (screens managed by GameManager)
     public GameObject startScreen;
     public GameObject pauseScreen;
 
-    // Patch
-    private SessionManager sessionManager;
-
-    // Mode Toggles
+    
+    // Mode Toggles (on StartScreen) 
     public Toggle trainingToggle;
     public Toggle playToggle;
 
@@ -34,26 +38,34 @@ public class GameManager : MonoBehaviour
     public bool eegStreamOn = false;
     public bool resumeParticipant = false;
 
-    // Path To Logs 
+    // Paths To Logs 
     public string pathToPiDFolder;
     public string pathToStateFolder;
     public string pathToBehaviouralFolder;
 
     private void Awake()
     {
-        sessionManager = GetComponent<SessionManager>();
+
+        sessionManager = sessionManagerObj.GetComponent<SessionManager>();
+        behaviouralIO = gameDataObject.GetComponent<BehaviouralDataIO>();
+        
         // For a WebGL build; hide EEG/resume toggles and participant ID input; & move the start task button. 
 #if UNITY_WEBGL
-    // Hide EEG/resume toggles and participant ID input; & move the start task button. 
-    eegToggle.gameObject.SetActive(false);
-    resumeToggle.gameObject.SetActive(false);
-    participantID.gameObject.SetActive(false);
-    taskText.gameObject.SetActive(false);
-    taskButton.transform.localPosition = taskButton.transform.localPosition + new Vector3(0, 250, 0);
+        WebGLSetup();
 #endif
 
     }
 
+
+    private void WebGLSetup()
+    {
+        // Hide EEG/resume toggles and participant ID input; & move the start task button. 
+        eegToggle.gameObject.SetActive(false);
+        resumeToggle.gameObject.SetActive(false);
+        participantID.gameObject.SetActive(false);
+        taskText.gameObject.SetActive(false);
+        taskButton.transform.localPosition = taskButton.transform.localPosition + new Vector3(0, 250, 0);
+    }
 
 
     private void Update() //No pause screen on Esc in WebGL 
@@ -113,9 +125,11 @@ public class GameManager : MonoBehaviour
             resumeParticipant = true;
         }
 
-        PiDFolders();
+        behaviouralIO.SetupLogDirectories();
 
-        InitLogs();
+       // PiDFolders();
+
+        //InitLogs();
         startScreen.SetActive(false);
         sessionManager.StartTask();
     }

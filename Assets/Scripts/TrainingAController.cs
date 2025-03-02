@@ -5,10 +5,13 @@ using System.Linq;
 
 public class TrainingAController : MonoBehaviour
 {
-    public GameObject trainingAFeedbackScreen;
-
+    public GameObject sessionManagerObject;
     private SessionManager sessionManager;
+
+    public GameObject patchObject;
     private PatchPresenter patchPresenter;
+
+    public GameObject trainingAFeedbackScreen;
     private TrainingAFeedback trainingAFeedback;
 
 
@@ -22,8 +25,8 @@ public class TrainingAController : MonoBehaviour
 
     private void Awake()
     {
-        sessionManager = GetComponent<SessionManager>();
-        patchPresenter = GetComponent<PatchPresenter>();
+        sessionManager = sessionManagerObject.GetComponent<SessionManager>();
+        patchPresenter = patchObject.GetComponent<PatchPresenter>();
         trainingAFeedback = trainingAFeedbackScreen.GetComponent<TrainingAFeedback>();
     }
 
@@ -85,7 +88,7 @@ public class TrainingAController : MonoBehaviour
 
             trialIndex++;
         }
-        StartCoroutine(sessionManager.EndSession("End of Training A"));
+        StartCoroutine(sessionManager.EndTrainingSession("Training A Complete"));
     }
 
     public void TrainingAChoice(bool choseLeave)

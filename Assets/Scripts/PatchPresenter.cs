@@ -3,11 +3,14 @@ using UnityEngine;
 
 public class PatchPresenter : MonoBehaviour
 {
-    public GameObject boxObject;
-    public GameObject fixation;
 
+    public GameObject eegObject;
     private EegStream eegStream;
+
+    public GameObject boxObject;
     private Box box;
+
+    public GameObject fixation;
 
     private float[] rewards;
     private bool inBlueEnv;
@@ -23,9 +26,8 @@ public class PatchPresenter : MonoBehaviour
 
     private void Awake()
     {
-       box  = boxObject.GetComponent<Box>();
-       eegStream = GetComponent<EegStream>();
-        
+       eegStream = eegObject.GetComponent<EegStream>();
+       box = boxObject.GetComponent<Box>();
     }
 
     public IEnumerator StartPatch(float[] rewardsArray, bool? leave, int trialIndex, int patchIndex)
@@ -54,10 +56,6 @@ public class PatchPresenter : MonoBehaviour
     private IEnumerator InterEvent()
     {
         fixation.SetActive(true);
-        //while (!Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    yield return null;
-        //}
 
         while (
     !Input.GetKeyDown(KeyCode.Space)

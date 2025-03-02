@@ -4,10 +4,14 @@ using UnityEngine.UI;
 
 public class LSD : MonoBehaviour
 {
-    public GameManager gameManager;
+    // Manager Objects with Associated Scripts
+    public GameObject sessionManagerObject;
     private SessionManager sessionManager;
+
+    public GameObject eegObject;
     private EegStream eegStream;
 
+    // Actual Game Objects 
     public GameObject questionMark;
     public GameObject leaveButton;
     public GameObject stayButton;
@@ -21,12 +25,13 @@ public class LSD : MonoBehaviour
 
     private void Awake()
     {
-        sessionManager = gameManager.GetComponent<SessionManager>();
+        sessionManager = sessionManagerObject.GetComponent<SessionManager>();
+        eegStream = eegObject.GetComponent<EegStream>();
         leftButtonPos = leaveButton.transform.localPosition; //grabbing positions 
         rightButtonPos = stayButton.transform.localPosition;
         originalColour = leaveButton.GetComponent<Button>().colors.normalColor;
 
-        eegStream = gameManager.GetComponent<EegStream>();
+       
      
         //make sure on start all objects in the LSD are inactive 
         DeactivateLSDObjects();

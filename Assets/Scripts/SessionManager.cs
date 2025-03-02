@@ -6,33 +6,45 @@ using System.Linq;
 
 public class SessionManager : MonoBehaviour
 {
-    // GameData Objects 
-    public GameObject gameData;
-    private GameData patchData;
-    
+    // Manager Objects with Associated Scripts
+
+    public GameObject gameManagerObject;
+    private GameManager gameManager;
+
+    public GameObject gameDataObject;
+    private RewardData patchData;
+
+
+    public GameObject eegObject;
+    private EegStream eegStream;
+
+    public GameObject leaveStayDecisionScreen;
+    private LSD lsd;
+
+    public GameObject patchObject;
+    private PatchUtilities patchUtils;
+
     // Controllers
+
+    public GameObject taskObject;
     private TaskController taskController;
+
+    public GameObject trainingObject;
     private TrainingAController trainingAController;
     private TrainingBController trainingBController;
     private TrainingCController trainingCController;
 
-    // Other Scripts 
-    private GameManager gameManager;
-    private PatchUtilities patchUtils;
-    private EegStream eegStream;
-    private LSD lsd;
-
-    // GameObjects 
-    public GameObject leaveStayDecisionScreen;
-    
+    // GameObjects (screens, tmpro)
+  
     public GameObject intertrialScreen;
     public GameObject endTaskScreen;
 
     public TMP_Text optionalText;
     public TMP_Text continueText;
 
+    //vars
 
-    public bool inChoicePhase = false; //choice phase
+    public bool inChoicePhase = false; 
     public bool? leaveDecision = null;
 
     public int startTrialsAt;
@@ -40,20 +52,20 @@ public class SessionManager : MonoBehaviour
     public int[] patchOrder;
     public bool[] truncationOrder;
 
+ 
     private void Awake()
     {
-        //set up references to scripts & objects
-        gameManager = GetComponent<GameManager>();
-        patchData = gameData.GetComponent<GameData>(); //lists of patches (patches are arrays)
-        eegStream = GetComponent<EegStream>();
+        //set up references to scripts 
+        gameManager = gameManagerObject.GetComponent<GameManager>();
+        patchData = gameDataObject.GetComponent<RewardData>(); //lists of patches (patches are arrays)
+        eegStream = eegObject.GetComponent<EegStream>();
         lsd = leaveStayDecisionScreen.GetComponent<LSD>();
+        patchUtils = patchObject.GetComponent<PatchUtilities>();
+        taskController = taskObject.GetComponent<TaskController>();
 
-        patchUtils = GetComponent<PatchUtilities>();
-
-        taskController = GetComponent<TaskController>();
-        trainingAController = GetComponent<TrainingAController>();
-        trainingBController = GetComponent<TrainingBController>();
-        trainingCController = GetComponent<TrainingCController>();
+        trainingAController = trainingObject.GetComponent<TrainingAController>();
+        trainingBController = trainingObject.GetComponent<TrainingBController>();
+        trainingCController = trainingObject.GetComponent<TrainingCController>();
 
     }
     // Session Flow Methods
@@ -74,7 +86,6 @@ public class SessionManager : MonoBehaviour
     }
 
     // Task Flow Methods
-
 
     // Session Utils 
     public float[] SetPatch(bool? leave, int patchIdx)
@@ -116,21 +127,18 @@ public class SessionManager : MonoBehaviour
         return pointsInt;
     }
 
-    public IEnumerator EndSession(string displayMessage = null)
+    public IEnumerator EndTrainingSession(string displayMessage = null)
     {
         yield return new WaitForSeconds(0.1f);
         yield return StartCoroutine(Intertrial(displayMessage, 0.5f));
         yield return new WaitForSeconds(0.1f);
-        eegStream.StopLSL();
         gameManager.EndSession();
     }
 
-    public void EndTASKSession()
+    public void EndTask()
     {
-        
+        eegStream.StopLSL();
         endTaskScreen.SetActive(true);
-        //eegStream.StopLSL();
-        //gameManager.EndSession();
     }
 
     public void BeginChoicePhase()
@@ -159,7 +167,6 @@ public class SessionManager : MonoBehaviour
     {
         eegStream.StartLSL();
         eegStream.LogMessage("Task Started");
-
 
         if (!gameManager.resumeParticipant)
         {
@@ -190,6 +197,8 @@ public class SessionManager : MonoBehaviour
         WriteOutPresentationOrders();
     }
 
+    //dealing with persistant data:
+    //READING:: 
     public void ResumeParticipant()
     {
         // read in patch order; 
@@ -204,7 +213,7 @@ public class SessionManager : MonoBehaviour
         startTrialsAt = int.Parse(idxString);
 
     }
-
+    //WRITING OUT::
     public void WriteOutPresentationOrders()
     {
         string orderString = string.Join(",", patchOrder);

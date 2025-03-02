@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class TrainingBController : MonoBehaviour
 {
-
+    public GameObject sessionManagerObject;
     private SessionManager sessionManager;
+
+    public GameObject patchObject;
     private PatchPresenter patchPresenter;
 
     private int trialIndex;
@@ -16,8 +18,8 @@ public class TrainingBController : MonoBehaviour
 
     private void Awake()
     {
-        sessionManager = GetComponent<SessionManager>();
-        patchPresenter = GetComponent<PatchPresenter>();
+        sessionManager = sessionManagerObject.GetComponent<SessionManager>();
+        patchPresenter = patchObject.GetComponent<PatchPresenter>();
     }
 
     public IEnumerator RunTrainingB()
@@ -60,7 +62,7 @@ public class TrainingBController : MonoBehaviour
 
             setIdx++; // Increment the set counter
         }
-        StartCoroutine(sessionManager.EndSession("End of Training B"));
+        StartCoroutine(sessionManager.EndTrainingSession("Training B Complete"));
     }
 }
 
