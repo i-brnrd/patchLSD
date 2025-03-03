@@ -12,7 +12,7 @@ public class TaskController : MonoBehaviour
     public GameObject patchObject;
     private PatchPresenter patchPresenter;
 
-    public GameObject gameData;
+    public GameObject gameDataObject;
     private BehaviouralDataIO behaviouralData;
 
     private int maxTrials = 2;//private int maxTrials = 90;
@@ -28,7 +28,7 @@ public class TaskController : MonoBehaviour
     {
         sessionManager = sessionManagerObject.GetComponent<SessionManager>();
         patchPresenter = patchObject.GetComponent<PatchPresenter>();
-        behaviouralData = gameData.GetComponent<BehaviouralDataIO>();
+        behaviouralData = gameDataObject.GetComponent<BehaviouralDataIO>();
     }
 
 
@@ -37,9 +37,13 @@ public class TaskController : MonoBehaviour
 
         int[] accumPointsFeedback = { Mathf.FloorToInt(maxTrials / 4), Mathf.FloorToInt(maxTrials / 2), Mathf.FloorToInt((maxTrials * 3) / 4) };
 
-        yield return new WaitForSeconds(1.0f);
+        
         yield return StartCoroutine(sessionManager.Intertrial("Starting Task"));
-       
+// on press of the spacebar want to send a message to say start.
+// then wait for 1s before 
+        yield return new WaitForSeconds(4.0f);
+        // actually starting the patch
+
         while (trialIndex < maxTrials)
         {
             // get patch

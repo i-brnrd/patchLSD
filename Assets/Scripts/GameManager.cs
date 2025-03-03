@@ -38,11 +38,6 @@ public class GameManager : MonoBehaviour
     public bool eegStreamOn = false;
     public bool resumeParticipant = false;
 
-    // Paths To Logs 
-    public string pathToPiDFolder;
-    public string pathToStateFolder;
-    public string pathToBehaviouralFolder;
-
     private void Awake()
     {
 
@@ -126,10 +121,6 @@ public class GameManager : MonoBehaviour
         }
 
         behaviouralIO.SetupLogDirectories();
-
-       // PiDFolders();
-
-        //InitLogs();
         startScreen.SetActive(false);
         sessionManager.StartTask();
     }
@@ -150,69 +141,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
         isPaused = false;
         pauseScreen.SetActive(false);
-    }
-
-    private void PiDFolders()
-    {
-        string folderName;
-
-        if (!participantID.IsActive())
-        {
-            // If it's empty or null (ie Web GL) we will use a datetime ticks UUID 
-            folderName = string.Format(@"{0}", shortUUID());
-        }
-        else if (string.IsNullOrWhiteSpace(participantID.text))
-        {
-            // If it's empty or null (ie Web GL) we will use a datetime ticks UUID 
-            folderName = string.Format(@"{0}", shortUUID());
-        }
-        else
-        {
-            folderName = participantID.text;
-        }
-
-
-        pathToPiDFolder = Path.Combine(Application.persistentDataPath, folderName);
-
-        if (!Directory.Exists(pathToPiDFolder))
-        {
-            Directory.CreateDirectory(pathToPiDFolder);
-        }
-
-        
-        pathToStateFolder = Path.Combine(pathToPiDFolder, "STATE");
-        if (!Directory.Exists(pathToStateFolder))
-        {
-            Directory.CreateDirectory(pathToStateFolder);
-        }
-
-
-        Debug.Log("Path to PiD Data " + pathToPiDFolder);
-        Debug.Log("Path to State Data " + pathToStateFolder);
-    }
-
-    private string shortUUID()
-    {
-        long ticks_since_local_epoch;
-        DateTime local_epoch = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        ticks_since_local_epoch = DateTime.UtcNow.Ticks - local_epoch.Ticks;
-
-        return ticks_since_local_epoch.ToString();
-    }
-
-
-    private void InitLogs()
-    {
-        
-        DateTime currentTime = DateTime.Now;
-        string timeStamp = currentTime.ToString("yyyy_MM_dd_HH_mm_ss");
-
-        pathToBehaviouralFolder = Path.Combine(pathToPiDFolder, "DATA_"+ timeStamp );
-      
-        Directory.CreateDirectory(pathToBehaviouralFolder);
-
-        File.WriteAllText(pathToBehaviouralFolder + "/init.log", "Task Initialised/ Resumed at: " + currentTime);
-
     }
 
     // Setting interactable status for Play Modes 

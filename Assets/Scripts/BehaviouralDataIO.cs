@@ -27,6 +27,28 @@ public class BehaviouralDataIO : MonoBehaviour
     }
 
 
+    public void WriteOutPresentationOrders()
+    {
+        string orderString = string.Join(",", sessionManager.patchOrder);
+        File.WriteAllText(Path.Combine(pathToStateDir, "patchOrder.log"), orderString);
+
+        string truncationString = string.Join(",", sessionManager.truncationOrder);
+        File.WriteAllText(Path.Combine(pathToStateDir, "truncationOrder.log"), truncationString);
+    }
+
+    public void ReadInPresentationOrders()
+    {
+        string orderString = File.ReadAllText(Path.Combine(pathToStateDir, "patchOrder.log"));
+        sessionManager.patchOrder = orderString.Split(',').Select(int.Parse).ToArray();
+
+        string truncationString = File.ReadAllText(Path.Combine(pathToStateDir, "truncationOrder.log"));
+        sessionManager.truncationOrder = truncationString.Split(',').Select(bool.Parse).ToArray();
+
+        string idxString = File.ReadAllText(Path.Combine(pathToStateDir, "state.log"));
+        sessionManager.startTrialsAt = int.Parse(idxString);
+
+    }
+
     public void WriteOutRewards(bool? leaveDecision, int trialIdx, int patchIdx)
     {
         float[] rewards;
@@ -139,7 +161,6 @@ public class BehaviouralDataIO : MonoBehaviour
             Directory.CreateDirectory(pathToParticipantDir);
         }
 
-       
 
     }
 

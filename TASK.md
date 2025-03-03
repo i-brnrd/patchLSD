@@ -32,7 +32,7 @@ The reward schedules were generated using the iterative method described in the 
 Two points to note:
 * In the [datasets](/Assets/Resources/RewardData/), the maximum reward $R_{max} = 0.35$. On [load](/Assets/Scripts/GameData.cs) we linearly scale rewards from $0-1$, so $R_{max}$ corresponds to a full box of [gold bars](/Assets/Scripts/Box.cs). It is these max normalised values that are written out as behavioural data.
 * Unity uses C# for scripting which uses zero-based indexing (as in C, Python). Neuro researchers use MATLAB as standard, which uses one-based indexing (as in Fortran ♥).\
-Though care has been taken to write out behavioural/EEG data in 1-based indexing, within scripts, be aware zero-based will be used.
+Though care has been taken to write out behavioural/EEG datasets using 1-based indexing, within scripts, zero-based will be used.
 
 
 ## Training
@@ -130,13 +130,11 @@ Triggers are found througout the code; event specific methods in the [eegStream 
 Tehy look liek         eegStream.LogButtonsAppear();
 but wrao in. Events all call an EEg stream internal methid LogMessage taht ten uses  lslStream.TriggerLSLEvent(message);
 
-### Events & Messages (LSL Markers)
+### Task Events & Messages (LSL Markers)
 
-<ins>**Beginning of main task**</ins>
-
-*event:* first spacebar press
-
-*trigger:* **‘start’**
+**Event:** First spacebar press ('Press spacebar to continue')\
+Triggers the message\
+**Message:** 'Start'
 
 *1 second delay after 1st spacebar press to allow time for trigger to not overlap with the next one.
 
