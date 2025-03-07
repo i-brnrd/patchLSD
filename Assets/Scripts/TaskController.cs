@@ -18,7 +18,7 @@ public class TaskController : MonoBehaviour
     public GameObject eegObject;
     private EegStream eegStream;
 
-    private int maxTrials = 1;//private int maxTrials = 90;
+    private int maxTrials = 10;//private int maxTrials = 90;
     int patchIndex;
     bool? leave;
  

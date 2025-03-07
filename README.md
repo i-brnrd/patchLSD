@@ -25,7 +25,7 @@ A functional  <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">we
 This works on laptop browsers and touchscreen (phones/ tablets). [Behavioural data](/TASK/Data) can be downloaded via browser by the user at the end of the task (and 1/4, 1/2 and 3/4 of the way through for peace of mind).
 
 ### Task
-See [here](/TASK) for full details on the actual task and programmatic implementation.
+See [here](/TASK.md) for full details on the actual task and programmatic implementation.
 
 ## Getting Started
 To build a version for use in your lab; Download Unity (& dependencies); download this repo & build.\

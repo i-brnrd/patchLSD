@@ -4,7 +4,7 @@
 ### Patch-LSD (Leave Stay Decision)
 
 This document describes key points behind this implementation of the Patch-LSD (Leave Stay Decision) task.\
-There are minor differences in functionality between device builds and the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>, and these are outlined in this document.
+There are minor differences in functionality between device builds and the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> outlined in this document.
 
 ### Contents
 * [Overview](#overview)
@@ -14,8 +14,14 @@ There are minor differences in functionality between device builds and the <a  h
     * [Training B](#training-b)
     * [Training C](#training-b)
 * [Task](#task-1)
+    * [Pausing](#pausing)
+    * [Presentation Orders](#order-randomisation)
+    * [Data Out](#data)
+        * [Behavioural (Choice) Data](#behavioural-data)
+        * [EEG Stream](#eeg-data)
 
-### [Data](#data)
+
+
 
 ## Overview
 The task is designed to elucidate switching behaviour as a function of time linked reward rates. To place the following in context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
@@ -49,7 +55,7 @@ After a (varying) number of events in a **blue box** patch, participants are ask
 
 
 ## Patches/ Reward Data
-The raw patch reward schedules were taken directly from data provided by Marco Wittman. The raw data can be found [here](/Assets/Resources/RewardData/) ( see also [plots](/Assets/Resources/Literature/MarcoRR.html) of the patch reward rates).\
+The raw patch reward schedules were taken directly from data provided by Marco Wittman. The raw data can be found [here](/Assets/Resources/RewardData/) (also there are [plots](/Assets/Resources/Literature/MarcoRR.html) of the patch reward rates provided).\
 The reward schedules were generated from 18 reward rate curves using the iterative method described in the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> (we did not re-generate these for this project). There were 18 reward rate curves from each of which 5 [raw patch reward schedules](/Assets/Resources/RewardData/) were generated, giving a total of 90 patches.\
 Two points to note:
 * In the [datasets](/Assets/Resources/RewardData/), the maximum reward $R_{max} = 0.35$. On [load](/Assets/Scripts/GameData.cs) we linearly scale rewards from $0-1$, so $R_{max}$ corresponds to a full box of [gold bars](/Assets/Scripts/Box.cs). It is these max normalised values that are written out as behavioural data.
@@ -104,78 +110,80 @@ Participants are presented with all [90 changing patches](/Assets/Resources/Rewa
 
 After the [patch](/Assets/Resources/RewardData/rew2ld.csv) is presented, the participant is presented with the Leave Stay Decision screen.\
 To indicate the decision phase, a question mark is shown on screen for 2s. Then two buttons are diplayed; one for leave and one for stay. The positions switch randomly at each Leave Stay Decision.
-Once a selelction is made, the choice is highlighted in yellow for 2 seconds, and the task continues.\
-If that given trial is not [truncated](#order-randomisation).
-if the trial has been s not [truncated](#order-randomisation). (ie don't show the post decision patches)
+Once a selelction is made, the choice is [recorded](), and is highlighted in yellow for 2 seconds, and the task continues.\
+To shorten the experiment, 60% of trials are truncated post LSD. If a trial has not been selected for [truncation](#order-randomisation) then the patch chosen is presented; and feedback follows. If the trial has been selected for [truncation](#order-randomisation) then the post Leave Stay Decision patch is not shown, and the feedback is presented immediately.
 
-THe positions of leav eand stary bittons are ransomised.  Very smple Each trial is
-Run through eac of the 90 patches in a radmosied order.
-Some are truncated post decision (ie don't show the post decision patches)
-After
+Feedback takes the form of points. The points are calculated as follows:
 
-Leave-Stay Decision
+    if (leave == true)
+        {
 
--Leave for Red patch (default)
+            points = ldGoSum - ldStaySum;
 
-Each quarter of experiment, subjects recieve feedback about Bonus Points- done
-
-
-
+        }
+        else
+        {
+            points = ldStaySum - ldGoSum;
+        }
 
 
 
+Such that an incorrect decision will have a negative number of points, and a correct decision a positive number of points.\
+After 1/4, 1/2 and 3/4 of the task, the total bonus points accumulated are displayed. At these points in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>; the option to download data is offered (to mitigate the risk of data loss as persistant data is difficult to access in a browser).
 
-#### Order Randomisation
-The 90 [patches](/Assets/Resources/RewardData/) (see [plots](/Assets/Resources/Literature/MarcoRR.html)) are pulled from 18 different reward rate curves;
-
-
-* Patches drawn from same reward rate curve must not be presented concurrentlyand it is important to ensure no consequitive
-for Patch orfe; the original data is ficidied into it's just a simple select from
-The rtuncation order: similar but we randomise a setevery 3.
-90 trials drawn from data provided by Marco.
-here were 18 reward rate curves from each of which 5 [raw patch reward schedules](/Assets/Resources/RewardData/) were generated, giving a total of 90 patches.\
-## Data
-### Logs, Data
-
-See [here](/TASK) for full details on the actual task and programmatic implementation.
-[Behavioural data](/TASK/Data) is written to the (device specific) [Unity Application Persistent Data Path](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) (any issues accessing this please get in touch).\
-**On completion** of the task, the option to download zipped data should be presented.\
-On a **device build**; selecting the 'Download Data' button should open a file browser dialogue to save a .zip of the data.\
-On **web**; selecting the 'Download Data' button should prompt a message allow downloads from the host (in this case github).
-
-### Behavioural Data
-Note that beavioural data is as per writeen out in 0-1 * In the [datasets](/Assets/Resources/RewardData/), the maximum reward $R_{max} = 0.35$. On [load](/Assets/Scripts/GameData.cs) we linearly scale rewards from $0-1$, so $R_{max}$ corresponds to a full box of [gold bars](/Assets/Scripts/Box.cs). It is these max normalised values that are written out as behavioural data.
-
-
-We write out 4 datatsets in the behabuoueal data. These are dorted in 'to' via a timestamped begining folder and they ar e
-
-| File  | Contains |
-| -------- | ------- |
-| `init.log` | Timestamp for task start/ resume |
-| `Choice.txt`| Leave-Stay Decision (Trial No, Patch No, And Leave? Where 1: leave, 0: stay) |
-| `RewardToLSD.txt`  | Rewards from Patch Start to LSD (in order as presented)  |
-| `LDStay.txt` | Rewards from LSD to end if Stay (in order as presented) |
-| `LDLeave.txt` | ' Rewards from LSD to end if Leave (in order as presented)  |
-| `PostLSD.txt` | '3000'  |
-| Stay Decision  | '3000'  |
+The task plays right through the 90 trials unless paused & resumed (see below); and at the end the [behavioural data](#behavioural-data) can be saved as a `.zip` as well as being recoverable from the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data.
 
 
 ### Pausing
 Training, plus the full 90 trials,can take a while to run through; especially if an EEG setup is used.\
-As a result there is a 'Resume' option in the **device builds**. This utilises the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data.
+As a result there is a 'Resume' option in the **device builds**. This utilises the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data. There is not this option in the web builds as the code has no control over what data persists across browser sessions.
 
-If the participant was started with a Unique PiD, the 'root' folder for the participant will be the folder named as that PiD; and you can resume by entering that PiD and selecting 'Resume Acquisition'. If you forgot to enter a PiD, the data is still saved (and resumable)- look in the [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html)) behavioural data and the root folder will be named as a timestamp from task commencement `YYYY-MM-DD-HH-MM-SS`. This folder name can be used as PiD to resume.
+If the participant's task was started with a Unique PiD, the 'root' folder for the participant will be named as that `unique-PiD`. The participant's task can be resumed by entering that PiD and selecting 'Resume Acquisition'. If you forgot to enter a PiD, the data is still saved (and resumable)- look in the [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) behavioural data. The default root folder will be named as a timestamp taken at task start, `YYYY-MM-DD-HH-MM-SS`. This folder name can be used as PiD to resume.
 
 Each 'session' will be saved under a folder in the 'root' with the name `DATA_YYYY-MM-DD-HH-MM-SS` so that it is clear when data was obtained.
 
 Pause-resume behaviour will picks up from the last finished trial, and uses [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data using `STATE/...` which saves `state.log` for a given trial number in the task, and also `presentationOrder.log` and `truncationOrder.log` to ensure the state of the task persists.
 #
-Note that the WebGL version can't be paused and restarted via a Participant ID flag, Instead to pause this, just click away from the browser.
-###
+Note that the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> can't be paused and restarted via a Participant ID. Instead, to pause, just click away from the browser.
+
+
+## Order Randomisation
+**Order**\
+The 90 [patches](/Assets/Resources/RewardData/) (see [plots](/Assets/Resources/Literature/MarcoRR.html)) are created from 18 different reward rate curves. Each curve was used to seed 5 different patches; which are in row order as batches of 5 in the raw data.\
+Patches drawn from the same reward rate curve must not be presented consecutively.
+As such, on task start; the patch presentation order is [randomised](/Assets/Scripts/PatchUtilities.cs) while keeping the distribution evenly spread across the original curves.\
+A similar implementation is used to [truncate](/Assets/Scripts/PatchUtilities.cs) 60% of the trials, by randomly truncating 3 of every 5 trials in the task.\
+These are determined and stored at the start of each task as `presentationOrder.log` and `truncationOrder.log` to ensure the state of the task can persist.
+
+## Data
+
+The task reads out EEG stream data and beavioural (choice) data. [Behavioural data](/TASK/Data) is written to the (device specific) [Unity Application Persistent Data Path](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html).
+
+**On completion** of the task, the option to download zipped data should be presented.\
+On a **device build**; selecting the 'Download Data' button should open a file browser dialogue to save a .zip of the data.\
+On the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">**web version**</a>; selecting the 'Download Data' button should prompt a message allow downloads from the host (in this case github). On the web, there is the option to download at points throughout the task.
+
+### Behavioural Data
+
+The `leave` variable in the scripts is a nullable boolean. Post-LSD, it takes either `True` (1) or `False` (0), where 1 = leave, 0 = stay, following convention.
+Also note that on [load](/Assets/Scripts/GameData.cs) we linearly scale rewards from $0-1$, it is these max normalised values that are written out as behavioural data, not the [unnormalised raw rewards](/Assets/Resources/RewardData/).
+
+The behavioural data directories are `Participant_Root/DATA_YYYY-MM-DD-HH-MM-SS/` where `YYYY-MM-DD-HH-MM-SS` is the timestamp for that session start.\ In th
+We write out 5 datatsets and 1 log file, as follows:
+
+| File  | Contains |
+| -------- | ------- |
+| `init.log` | Timestamp for task start/ resume |
+| `Choice.txt`| Leave-Stay Decision (Trial No, Patch No, And Leave? 1 = Leave, 0 = Stay) |
+| `RewardToLSD.txt`  | Rewards from Patch Start to LSD (in order as presented)  |
+| `LDStay.txt` | Rewards from LSD to end if Stay (in order as presented) |
+| `LDLeave.txt` | Rewards from LSD to end if Leave (in order as presented)  |
+| `PostLSD.txt` | What was actually presented (single 0 indicates truncation)  |
+
 
 ### EEG Data
 
-To streamline EEG integration, triggers take the form of event specific methods in the [eegStream script](/Assets/Scripts/EegStream.cs). There are also device-specific directives (i.e. WebGL builds won't look for an EEG stream).
+To streamline EEG integration, triggers take the form of event specific methods in the [eegStream script](/Assets/Scripts/EegStream.cs). This approach also allowed device-specific directives (i.e. WebGL builds won't look for an EEG stream).
 
 #### Task Events & Messages (LSL Markers)
 
@@ -185,7 +193,7 @@ Note there is a 1s delay between the first spacebar press and the first fixaton 
 | Event   | Message |
 | -------- | ------- |
 | Task Begins (first spacebar press)  | 'Start'   |
-| Box Presentation |e.g. ‘1013500' (see below) |
+| Box Presentation |e.g. ‘1101013500' (see below) |
 | Choice Phase Begins (? presented)   | '7'  |
 | LSD Options Presented  | '8'  |
 | Leave Decision  | '4000'  |
@@ -204,13 +212,10 @@ Note there is a 1s delay between the first spacebar press and the first fixaton 
 | 7th & 8th | Patch Number | 01-90 (random)  |
 | 9th & 10th  | Box %age Full  | 00-99 (i.e. $R*99$)|
 
-For example:
+Examples:
 
  Message  | Meaning
 | -------- | -------
 | ‘1101013500'  | Blue, Pre LSD, 1st Step (pre LSD), 1st trial, Patch 35, Empty (00%)  |
-| '1024850' |Step No | 01-17 |
-| '2116275' | Trial Number | 01-90 (in order)  |
-| 5th & 6th | Patch Number | 01-90 (random)  |
-| 7th & 8th  | Box %age Full  | 00-99 (i.e. $R*99$)|
-‘1013500' : Red, 1024850, 2116275, etc.’
+| '1205481850' |Blue, Post LSD, 5th Step (post LSD), 48th trial, Patch 18, Half Full (50%) |
+| '2204162705' | Red, Post LSD, 4th Step (post LSD), 16th trial, Patch 27, Nearly Empty (5% full)|
