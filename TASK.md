@@ -6,21 +6,22 @@
 This document describes key points behind this implementation of the Patch-LSD (Leave Stay Decision) task.\
 There are minor differences in functionality between device builds and the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>, and these are outlined in this document.
 
-## Contents
-### [Task](#task)
+### Contents
 * [Overview](#overview)
-* [Patches](#patch-reward-data)
-* [Patches](#patch-reward-data)
+* [Patches](#patches-reward-data)
+* [Training](#training)
+    * [Training A](#training-a)
+    * [Training B](#training-b)
+    * [Training C](#training-b)
+* [Task](#task-1)
 
 ### [Data](#data)
 
-
-
-
-## The Task
+## Overview
 The task is designed to elucidate switching behaviour as a function of time linked reward rates. To place the following in context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
 
-#### Overview
+
+
 On load, the Main Menu will appear. Two modes are available to the experimenter or participant; [Training (A, B & C)](#training) & [Task](#task-1).\
 If training mode is selected, no data is stored or written out. On devices, the task can be paused and restarted via <kbd>Esc</kbd>. On the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>., clicking away from the browser should pause; and to return to the main menu; just refresh the browser.
 
@@ -29,18 +30,31 @@ Participants are presented with different patches that present rewards at differ
 Patches consist of a coloured box. In non-reward events, this box is empty, and in reward events, the box is filled to a given level with an illustration of gold bars.
 
 **Blue (Changing) Environment:**\
-The **blue box** indicates a patch with a changing reward rate (i.e. the rate changes with timestep).\
-**Red (Default) Environment:**\
-The **red box** indicates a stable (default) reward rate.
+The **blue box** indicates a patch with a changing reward rate (i.e. the rate changes with timestep).
 
 | Empty Box| Reward Box (level varies) |
 | --- | --- |
 | ![Alt text](/Assets/Resources/Screenshots/NonReward_Blue.png) | ![Alt text](Assets/Resources/Screenshots/Reward_Blue.png) |
-| ![Alt text](/Assets/Resources/Screenshots/NonReward_Red.png) | ![Alt text](Assets/Resources/Screenshots/Reward_Blue.png) |
 
-After a (varying) number of events in a **blue box** patch, participants are asked to decide whether to stay in that **blue box** patch, or leave to go to a **red box** patch (with a stable reward rate that participants learn during [training](#training) ).
+**Red (Default) Environment:**\
+The **red box** indicates a stable (default) reward rate that participants learn during [training](#training).
+| Empty Box| Reward Box (level varies) |
+| --- | --- |
+| ![Alt text](/Assets/Resources/Screenshots/NonReward_Red.png) | ![Alt text](Assets/Resources/Screenshots/Reward_Red.png) |
 
 
+After a (varying) number of events in a **blue box** patch, participants are asked to decide whether to stay in that **blue box** patch, or leave to go to a **red box** patch via a leave-stay decision
+
+ ![Alt text](Assets/Resources/Screenshots/LSD.png)
+
+
+## Patches/ Reward Data
+The raw patch reward schedules were taken directly from data provided by Marco Wittman. The raw data can be found [here](/Assets/Resources/RewardData/) ( see also [plots](/Assets/Resources/Literature/MarcoRR.html) of the patch reward rates).\
+The reward schedules were generated from 18 reward rate curves using the iterative method described in the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> (we did not re-generate these for this project). There were 18 reward rate curves from each of which 5 [raw patch reward schedules](/Assets/Resources/RewardData/) were generated, giving a total of 90 patches.\
+Two points to note:
+* In the [datasets](/Assets/Resources/RewardData/), the maximum reward $R_{max} = 0.35$. On [load](/Assets/Scripts/GameData.cs) we linearly scale rewards from $0-1$, so $R_{max}$ corresponds to a full box of [gold bars](/Assets/Scripts/Box.cs). It is these max normalised values that are written out as behavioural data.
+* Unity uses C# for scripting which uses zero-based indexing (as in C, Python). Neuro researchers use MATLAB as standard, which uses one-based indexing (as in Fortran ♥).\
+Though care has been taken to write out behavioural/EEG datasets using 1-based indexing, within scripts, zero-based will be used.
 
 
 
@@ -86,49 +100,40 @@ The 18 trials use 18 [randomly selected](#order-randomisation) patches from the 
 
 
 ## Task
-Participants are presented with all [90 patches](/Assets/Resources/RewardData/) (visualised [here](/Assets/Resources/Literature/MarcoRR.html)) in an evenly distributed [random order](#order-randomisation).
+Participants are presented with all [90 changing patches](/Assets/Resources/RewardData/) (visualised [here](/Assets/Resources/Literature/MarcoRR.html)) in an evenly distributed [random order](#order-randomisation).
 
-When the   [rew2ld.csv](/Assets/Resources/RewardData/rew2ld.csv) the participant is presented with the leave stay decision screen. In this ti sows a quesiton mark for however many seconds nad then
+After the [patch](/Assets/Resources/RewardData/rew2ld.csv) is presented, the participant is presented with the Leave Stay Decision screen.\
+To indicate the decision phase, a question mark is shown on screen for 2s. Then two buttons are diplayed; one for leave and one for stay. The positions switch randomly at each Leave Stay Decision.
+Once a selelction is made, the choice is highlighted in yellow for 2 seconds, and the task continues.\
+If that given trial is not [truncated](#order-randomisation).
+if the trial has been s not [truncated](#order-randomisation). (ie don't show the post decision patches)
+
 THe positions of leav eand stary bittons are ransomised.  Very smple Each trial is
 Run through eac of the 90 patches in a radmosied order.
 Some are truncated post decision (ie don't show the post decision patches)
 After
-Blue patch for 15/16/17 events.
-
-Events are reward or non reward (drawn from Marco's task data*)
 
 Leave-Stay Decision
-
-Either
-
--Stay in Blue patch
 
 -Leave for Red patch (default)
 
 Each quarter of experiment, subjects recieve feedback about Bonus Points- done
 
-60% of trials were truncated after the LSD- done?
-
-We need to decide whether orders of these should be fixed or not and
 
 
 
-* Patches drawn from same reward rate curve must not be presented concurrently
 
-#### Patches/ Reward Data
-The raw patch reward schedules were taken directly from data provided by Marco Wittman. The raw data can be found [here](/Assets/Resources/RewardData/) ( see also [plots](/Assets/Resources/Literature/MarcoRR.html) of the patch reward rates).\
-The reward schedules were generated using the iterative method described in the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a>; please note we did not re-generate these for this project.\
-Two points to note:
-* In the [datasets](/Assets/Resources/RewardData/), the maximum reward $R_{max} = 0.35$. On [load](/Assets/Scripts/GameData.cs) we linearly scale rewards from $0-1$, so $R_{max}$ corresponds to a full box of [gold bars](/Assets/Scripts/Box.cs). It is these max normalised values that are written out as behavioural data.
-* Unity uses C# for scripting which uses zero-based indexing (as in C, Python). Neuro researchers use MATLAB as standard, which uses one-based indexing (as in Fortran ♥).\
-Though care has been taken to write out behavioural/EEG datasets using 1-based indexing, within scripts, zero-based will be used.
+
 
 #### Order Randomisation
-The 90 [patches](/Assets/Resources/RewardData/) (see [plots](/Assets/Resources/Literature/MarcoRR.html)) are pulled from 18 different reward rate curves; and it is important to ensure no consequitive
+The 90 [patches](/Assets/Resources/RewardData/) (see [plots](/Assets/Resources/Literature/MarcoRR.html)) are pulled from 18 different reward rate curves;
+
+
+* Patches drawn from same reward rate curve must not be presented concurrentlyand it is important to ensure no consequitive
 for Patch orfe; the original data is ficidied into it's just a simple select from
 The rtuncation order: similar but we randomise a setevery 3.
 90 trials drawn from data provided by Marco.
-
+here were 18 reward rate curves from each of which 5 [raw patch reward schedules](/Assets/Resources/RewardData/) were generated, giving a total of 90 patches.\
 ## Data
 ### Logs, Data
 
