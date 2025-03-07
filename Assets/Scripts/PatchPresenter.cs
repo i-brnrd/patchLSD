@@ -18,6 +18,7 @@ public class PatchPresenter : MonoBehaviour
     private int eventIdx = 0;
     private int trialIdx;
     private int patchIdx;
+    private bool? leave;
 
     private readonly float EVENTDISPLAYTIME = 0.8f; // as per Marco's task
 
@@ -30,12 +31,13 @@ public class PatchPresenter : MonoBehaviour
        box = boxObject.GetComponent<Box>();
     }
 
-    public IEnumerator StartPatch(float[] rewardsArray, bool? leave, int trialIndex, int patchIndex)
+    public IEnumerator StartPatch(float[] rewardsArray, bool? leaveIn, int trialIndex, int patchIndex)
     {
         eventIdx = 0;
         rewards = rewardsArray;
+       
 
-        if (leave == true)
+        if (leaveIn == true)
         {
             inBlueEnv = false;
         }
@@ -46,6 +48,7 @@ public class PatchPresenter : MonoBehaviour
 
         trialIdx = trialIndex;
         patchIdx = patchIndex;
+        leave = leaveIn;
 
         while (eventIdx < rewards.Length)
         {
@@ -89,7 +92,7 @@ public class PatchPresenter : MonoBehaviour
         reward = rewards[eventIdx];
         box.SetBarHeight(reward);
 
-        eegStream.LogRewardEvent(inBlueEnv, eventIdx, trialIdx, patchIdx, reward);
+        eegStream.LogRewardEvent(inBlueEnv, leave, eventIdx, trialIdx, patchIdx, reward);
         
         yield return new WaitForSeconds(EVENTDISPLAYTIME);
         boxObject.SetActive(false);

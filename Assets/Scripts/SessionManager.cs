@@ -93,7 +93,6 @@ public class SessionManager : MonoBehaviour
     public void StartTask()
     {
         eegStream.StartLSL();
-        eegStream.LogMessage("Pressed Run Task");
 
         if (!gameManager.resumeParticipant)
         {
@@ -253,8 +252,7 @@ public class SessionManager : MonoBehaviour
 
         intertrialScreen.SetActive(false);
     }
-
-    
+   
 
 }
 

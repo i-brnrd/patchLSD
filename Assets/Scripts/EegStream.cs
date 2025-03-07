@@ -56,9 +56,10 @@ public class EegStream : MonoBehaviour
         }
 
     }
-    public void LogRewardEvent(bool inBlueEnv, int eventIndex, int trialIndex, int patchIndex, float reward)
+    public void LogRewardEvent(bool inBlueEnv, bool? leave, int eventIndex, int trialIndex, int patchIndex, float reward)
     {
         int environmentTag;
+        int prePostLSDTag;
         int eventNumber;
         int trialNumber;
         int patchNumber;
@@ -73,6 +74,17 @@ public class EegStream : MonoBehaviour
             environmentTag = 2;
         }
 
+        if (leave == null)
+        {
+            prePostLSDTag = 1;
+        }
+        else
+        {
+            prePostLSDTag= 2;
+        }
+
+
+
         fillLevelPercentage = Mathf.RoundToInt(reward * 99);
 
         eventNumber = eventIndex + 1;  // c# 0 based
@@ -80,8 +92,13 @@ public class EegStream : MonoBehaviour
         patchNumber = patchIndex + 1;
         
 
-        LogMessage($"{environmentTag}{eventNumber:D2}{trialNumber:D2}{patchNumber:D2}{fillLevelPercentage:D2}");
+        LogMessage($"{environmentTag}{prePostLSDTag}{eventNumber:D2}{trialNumber:D2}{patchNumber:D2}{fillLevelPercentage:D2}");
 
+    }
+
+    public void StartTask()
+    {
+        LogMessage("Start");
     }
 
     public void LogChoicePhaseBegins()

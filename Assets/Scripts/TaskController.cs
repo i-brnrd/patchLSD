@@ -15,7 +15,10 @@ public class TaskController : MonoBehaviour
     public GameObject gameDataObject;
     private BehaviouralDataIO behaviouralData;
 
-    private int maxTrials = 2;//private int maxTrials = 90;
+    public GameObject eegObject;
+    private EegStream eegStream;
+
+    private int maxTrials = 1;//private int maxTrials = 90;
     int patchIndex;
     bool? leave;
  
@@ -29,6 +32,7 @@ public class TaskController : MonoBehaviour
         sessionManager = sessionManagerObject.GetComponent<SessionManager>();
         patchPresenter = patchObject.GetComponent<PatchPresenter>();
         behaviouralData = gameDataObject.GetComponent<BehaviouralDataIO>();
+        eegStream = eegObject.GetComponent<EegStream>();
     }
 
 
@@ -39,9 +43,10 @@ public class TaskController : MonoBehaviour
 
         
         yield return StartCoroutine(sessionManager.Intertrial("Starting Task"));
+        eegStream.StartTask();
 // on press of the spacebar want to send a message to say start.
 // then wait for 1s before 
-        yield return new WaitForSeconds(4.0f);
+        yield return new WaitForSeconds(1.0f);
         // actually starting the patch
 
         while (trialIndex < maxTrials)
