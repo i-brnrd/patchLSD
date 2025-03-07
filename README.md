@@ -2,22 +2,23 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14977005.svg)](https://doi.org/10.5281/zenodo.14977005)
 
 # Patch-LSD
-
-
-
 Unity implementation of  <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">Marco Wittman's Patch Foraging Task</a>:
+
+
+<small> A reinforcement learning foraging task developed to elucidate switching behaviour (Leave Stay Decisions) as a function of time linked reward rates.
+
 
 ![alt text](Assets/Resources/Screenshots/combo.png)
 
 
-<small> A reinforcement learning foraging task developed to elucidate switching behaviour as a function of time linked reward rates.
+
 
 ## Description
 Intended to be a portable-ish OS/ device agnostic version of this task; to allow diverse teams (clinical, academic) to collect data easily. This version also contains optional EEG streaming via  <a  href="https://labstreaminglayer.readthedocs.io/index.html"  target="_blank">LSL's</a> (Lab Streaming Layer) custom Unity package,  <a  href="https://github.com/labstreaminglayer/LSL4Unity"  target="_blank">LSL4Unity</a>.
 
 
 ## Notes
-Unity Project (C# scripts & art) very basic.\
+Unity 2D Project; very basic entry-level C#.\
 Builds tested on for webGL, Mac, Windows & Linux (the EEG LSL stream has only been tested on Windows). As of Feb 2025; iOS/android not tested.
 
 A functional  <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web demo</a> is available for use (no EEG).\
