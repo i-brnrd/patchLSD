@@ -38,10 +38,12 @@ public class SessionManager : MonoBehaviour
     // GameObjects (screens, tmpro)
   
     public GameObject intertrialScreen;
+    public GameObject webDLScreen;
     public GameObject endTaskScreen;
 
     public TMP_Text optionalText;
     public TMP_Text continueText;
+    public TMP_Text statusText;
 
     //vars
 
@@ -52,9 +54,8 @@ public class SessionManager : MonoBehaviour
     public int[] patchOrder;
     public bool[] truncationOrder;
 
-    // PATC STATE.log etc read in? 
+    private bool webContinue = false;
 
- 
     private void Awake()
     {
         //set up references to scripts 
@@ -252,7 +253,28 @@ public class SessionManager : MonoBehaviour
 
         intertrialScreen.SetActive(false);
     }
-   
+
+
+    public IEnumerator ShowWebDownloadScreen(string statusMessage)
+    {
+        webDLScreen.SetActive(true);
+        statusText.text = statusMessage;
+        webContinue = false;
+
+        while (!webContinue)
+        {
+            yield return null;
+        }
+
+        webDLScreen.SetActive(false);
+    }
+
+    public void OnContinue()
+    {
+        webContinue = true;
+    }
+
+
 
 }
 

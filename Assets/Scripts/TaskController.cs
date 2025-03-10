@@ -18,7 +18,7 @@ public class TaskController : MonoBehaviour
     public GameObject eegObject;
     private EegStream eegStream;
 
-    private int maxTrials = 10;//private int maxTrials = 90;
+    private int maxTrials = 90;
     int patchIndex;
     bool? leave;
  
@@ -36,16 +36,16 @@ public class TaskController : MonoBehaviour
     }
 
 
-    public IEnumerator RunTask(int trialIndex, int [] patchOrder, bool [] truncationOrder)
+    public IEnumerator RunTask(int trialIndex, int[] patchOrder, bool[] truncationOrder)
     {
 
         int[] accumPointsFeedback = { Mathf.FloorToInt(maxTrials / 4), Mathf.FloorToInt(maxTrials / 2), Mathf.FloorToInt((maxTrials * 3) / 4) };
 
-        
+
         yield return StartCoroutine(sessionManager.Intertrial("Starting Task"));
         eegStream.StartTask();
-// on press of the spacebar want to send a message to say start.
-// then wait for 1s before 
+        // on press of the spacebar want to send a message to say start.
+        // then wait for 1s before 
         yield return new WaitForSeconds(1.0f);
         // actually starting the patch
 
@@ -88,20 +88,32 @@ public class TaskController : MonoBehaviour
             trialIndex++;
             behaviouralData.WriteState(trialIndex);
 
-            yield return StartCoroutine(sessionManager.ShowPointsTrial((trialIndex-1), points));
+            yield return StartCoroutine(sessionManager.ShowPointsTrial((trialIndex - 1), points));
 
-           
+
 
             if (accumPointsFeedback.Contains(trialIndex))
             {
                 yield return StartCoroutine(sessionManager.ShowAccumulatedPoints(accumulatedPoints));
+#if UNITY_WEBGL
+                if (trialIndex == accumPointsFeedback[0])
+                {
+                    yield return StartCoroutine(sessionManager.ShowWebDownloadScreen("Task 25% Complete"));
+                }
+                else if (trialIndex == accumPointsFeedback[1])
+                {
+                    yield return StartCoroutine(sessionManager.ShowWebDownloadScreen("Task 50% Complete"));
+                }
+                else if (trialIndex == accumPointsFeedback[2])
+                {
+                    yield return StartCoroutine(sessionManager.ShowWebDownloadScreen("Task 75% Complete"));
+                }
+#endif
             }
 
         }
 
         sessionManager.EndTask();
     }
-    
 }
-
 

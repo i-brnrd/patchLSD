@@ -1,10 +1,10 @@
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14977005.svg)](https://doi.org/10.5281/zenodo.14977005)
-# Task
-### Patch-LSD (Leave Stay Decision)
+# Patch-LSD (Leave Stay Decision)
 
-This document describes key points behind this implementation of the Patch-LSD (Leave Stay Decision) task.\
-There are minor differences in functionality between device builds and the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> outlined in this document.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14977005.svg)](https://doi.org/10.5281/zenodo.14977005)
+
+Unity implementation of the [Patch Foraging Task](https://doi.org/10.1038/ncomms12327) (Marco Wittmann, 2016) designed to investigate switching behaviour via Leave-Stay Decisions (LSD) influenced by reward rates.\
+This document also details the minor differences in functionality between device builds and the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
 
 ### Contents
 * [Overview](#overview)
@@ -21,19 +21,15 @@ There are minor differences in functionality between device builds and the <a  h
         * [EEG Stream](#eeg-data)
 
 
-
-
 ## Overview
 The task is designed to elucidate switching behaviour as a function of time linked reward rates. To place the following in context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
 
-
-
-On load, the Main Menu will appear. Two modes are available to the experimenter or participant; [Training (A, B & C)](#training) & [Task](#task-1).\
-If training mode is selected, no data is stored or written out. On devices, the task can be paused and restarted via <kbd>Esc</kbd>. On the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>., clicking away from the browser should pause; and to return to the main menu; just refresh the browser.
+On load, the Main Menu will appear, with two modes available, [Training (A, B & C)](#training) & [Task](#task-1).\
+In training mode, no data is stored or written out.\
 
 **Task Summary**\
-Participants are presented with different patches that present rewards at different rates. In a patch, both reward events and non-reward events are presented. Between events, a fixation cross is shown.\
-Patches consist of a coloured box. In non-reward events, this box is empty, and in reward events, the box is filled to a given level with an illustration of gold bars.
+Participants are presented with patches containing rewards (presented at different rates).\
+Patches (coloured boxes) consist of non-reward events (empty boxes) and reward events (boxes with gold bars). Between events, a fixation cross is shown.
 
 **Blue (Changing) Environment:**\
 The **blue box** indicates a patch with a changing reward rate (i.e. the rate changes with timestep).
@@ -55,65 +51,64 @@ After a (varying) number of events in a **blue box** patch, participants are ask
 
 
 ## Patches/ Reward Data
-The raw patch reward schedules were taken directly from data provided by Marco Wittman. The raw data can be found [here](/Assets/Resources/RewardData/) (also there are [plots](/Assets/Resources/Literature/MarcoRR.html) of the patch reward rates provided).\
-The reward schedules were generated from 18 reward rate curves using the iterative method described in the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> (we did not re-generate these for this project). There were 18 reward rate curves from each of which 5 [raw patch reward schedules](/Assets/Resources/RewardData/) were generated, giving a total of 90 patches.\
-Two points to note:
-* In the [datasets](/Assets/Resources/RewardData/), the maximum reward $R_{max} = 0.35$. On [load](/Assets/Scripts/GameData.cs) we linearly scale rewards from $0-1$, so $R_{max}$ corresponds to a full box of [gold bars](/Assets/Scripts/Box.cs). It is these max normalised values that are written out as behavioural data.
-* Unity uses C# for scripting which uses zero-based indexing (as in C, Python). Neuro researchers use MATLAB as standard, which uses one-based indexing (as in Fortran ♥).\
-Though care has been taken to write out behavioural/EEG datasets using 1-based indexing, within scripts, zero-based will be used.
+* Raw reward schedules sourced from [Marco Wittmann's original data](Assets/Resources/RewardData/), visualised [here](/Assets/Resources/Literature/MarcoRR.html).
+    * 5 patches per curve were  <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank"> generated</a> from 18 reward rate curves; resulting in [90 patches](/Assets/Resources/RewardData/).
+* Rewards are scaled from  $0 \leq R \leq 0.35$  in the [original datasets](/Assets/Resources/RewardData/) to $0 \leq R \leq 1$.
+* Unity scripts (C#) use zero-based indexing, output data follows one-based indexing (MATLAB convention).
 
-
+## Play
+On devices, pausing via <kbd>Esc</kbd> allows return to main menu,  no training progress is saved.
+On web 9including on deivce on pone
 
 
 ## Training
-No data is stored/ written out to files in the training sessions. Pausing via <kbd>Esc</kbd> allows return to main menu,  no training progress is saved.
+*Note: Training sessions do not record data.*
 
-The aim of the training is to familiarise the participant with the task, and with the stable reward rate in the default (red) environment.\
-The training options A, B & C are only briefly described here, and are implemented as set out in the <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a> of the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a>.
-
-The [participant instructions](/Assets/Resources/Instructions/) give experimenters more detailed descriptions of how to to deliver the training and the task.\
-Note below, Unity uses C# for scripting which uses zero-based indexing (like python).
+Training familiarises participants with the task, and the stable reward rate in the default (red) environment.\
+The training options A, B & C are set out in the <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a> of the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a>. The [participant instructions](/Assets/Resources/Instructions/) give details on delivery.
 
 
 ### Training A:
 
-[Training A](/Assets/Scripts/TrainingAController.cs) aims to familiarise the participants with the reward rate in the default patch, and consists of 10 trials each comprising two length-matched patches (each containing 15 events; so a total of 30 events per trial). See <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a> for further details.\
-First **red** (default) is presented, then **blue** (changing).
-After this, a decision screen is presented to ask which environment the participant prefers.\
+[Training A](/Assets/Scripts/TrainingAController.cs) familiarises participants with the default (red) patch reward rate. See <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a> for further details.\
+Participants are presented with 10 trials, comprising two patches of 15 events (so 30 events per trial).
+First the **red** (default) enviroment is presented, then the **blue** (changing) environment. Following this, the participant is prompted ot indicate which environment was preferred.\
 The 10 length matched patches are presented in the order below:
  $$ \text{Trials A } \coloneqq\{18, 42, 86, 27, 65, 39, 76, 4, 13, 53\}$$
-These were selected to give a variety of scenarios (i.e. best decision is either to leave or stay with varying magnitudes). To alter the patches presented in Training A, change the following in the [controller script](/Assets/Scripts/TrainingAController.cs) (noting C# zero based indices):
+
 
     int[] trialsA = { 17, 41, 85, 26, 64, 38, 75, 3, 12, 52 };
 
-The rewards presented in Training A use [ldgo.csv](/Assets/Resources/RewardData/ldgo.csv) for **red** (default) and [ldstay.csv](/Assets/Resources/RewardData/ldstay.csv) for  **blue** (changing).
+ The rewards presented in Training A use [ldgo.csv](/Assets/Resources/RewardData/ldgo.csv) for **red** (default) and [ldstay.csv](/Assets/Resources/RewardData/ldstay.csv) for  **blue** (changing).
 
 ### Training B:
-[Training B](/Assets/Scripts/TrainingBController.cs) aims to familiarise the participants with monotonically changing reward rates, and consists of 3 repeats of a set of 3 'full' **blue** (changing) patches; as below:
+[Training B](/Assets/Scripts/TrainingBController.cs) familiarises participants with monotonically changing reward rates.  See <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a> for further details.\
+Participants are presented with 3 repeats of a set of 3 'full' **blue** (changing) patches:
 $$\text{Trials B } \coloneqq \{8, 42, 82\}$$
 
     int[] trialsB = { 7, 41, 81 };
 
- Again, further information is in the [participant instructions](/Assets/Resources/Instructions/)  and the <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a>.
-The rewards presented in Training B use a full **blue** (changing) patch, so for a given patch rewards run through [rew2ld.csv](/Assets/Resources/RewardData/rew2ld.csv) and then onto  [ldstay.csv](/Assets/Resources/RewardData/ldstay.csv) with no Leave-Stay decision.
+The rewards presented in Training B use a full **blue** (changing) patch- a given patch rewards runs through [rew2ld.csv](/Assets/Resources/RewardData/rew2ld.csv) and then onto  [ldstay.csv](/Assets/Resources/RewardData/ldstay.csv),  with no Leave-Stay decision presented.
 
 During the first set, participants are asked to pay attention to the change in reward magnitudes (ignoring delays). In the second set, participants are asked to pay attention to the change of reward delays (ignoring reward magnitudes), and in the final set, to the changes in both magnitudes and delays.
 
 ### Training C:
-[Training C](/Assets/Scripts/TrainingCController.cs) is a shortened (18 trials) version of the experimental task including leave-stay
-decisions and post leave-stay decision presentations (no truncations). Participants are given performance feedback after each trial.\
-The 18 trials use 18 [randomly selected](#order-randomisation) patches from the full task set.
+[Training C](/Assets/Scripts/TrainingCController.cs) is a shortened (18 trials) version of the experimental task including leave-stay decisions. Participants are given performance feedback after each trial.\
+The 18 trials are [randomly selected](#order-randomisation) patches from the full task set.
 
 
 ## Task
 Participants are presented with all [90 changing patches](/Assets/Resources/RewardData/) (visualised [here](/Assets/Resources/Literature/MarcoRR.html)) in an evenly distributed [random order](#order-randomisation).
 
-After the [patch](/Assets/Resources/RewardData/rew2ld.csv) is presented, the participant is presented with the Leave Stay Decision screen.\
-To indicate the decision phase, a question mark is shown on screen for 2s. Then two buttons are diplayed; one for leave and one for stay. The positions switch randomly at each Leave Stay Decision.
-Once a selelction is made, the choice is [recorded](), and is highlighted in yellow for 2 seconds, and the task continues.\
+The task plays right through the 90 trials unless paused & resumed (see below). On completion, there is an option to download and save the [behavioural data](#behavioural-data) can be saved as a `.zip` (as well as being recoverable from the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data).
+
+### Leave-Stay Decision & Feedback
+After the [changing patch](/Assets/Resources/RewardData/rew2ld.csv) is presented, a question mark is shown on screen for 2s to indicate the start of the decision phase.
+**Leave Stay Decision**: two buttons are diplayed (one for leave, one for stay, positions switch randomly).\
+Once a decision is made via selecting an option, the choice is [recorded](), and is highlighted in yellow for 2 seconds.\
 To shorten the experiment, 60% of trials are truncated post LSD. If a trial has not been selected for [truncation](#order-randomisation) then the patch chosen is presented; and feedback follows. If the trial has been selected for [truncation](#order-randomisation) then the post Leave Stay Decision patch is not shown, and the feedback is presented immediately.
 
-Feedback takes the form of points. The points are calculated as follows:
+Feedback takes the form of points calculated as follows:
 
     if (leave == true)
         {
@@ -127,68 +122,57 @@ Feedback takes the form of points. The points are calculated as follows:
         }
 
 
-
-Such that an incorrect decision will have a negative number of points, and a correct decision a positive number of points.\
-After 1/4, 1/2 and 3/4 of the task, the total bonus points accumulated are displayed. At these points in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>; the option to download data is offered (to mitigate the risk of data loss as persistant data is difficult to access in a browser).
-
-The task plays right through the 90 trials unless paused & resumed (see below); and at the end the [behavioural data](#behavioural-data) can be saved as a `.zip` as well as being recoverable from the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data.
-
+\
+After 1/4, 1/2 and 3/4 of the task, the total bonus points accumulated are displayed. At these points in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>; the option to download data is offered (to mitigate the risk of data loss).
 
 ### Pausing
-Training, plus the full 90 trials,can take a while to run through; especially if an EEG setup is used.\
-As a result there is a 'Resume' option in the **device builds**. This utilises the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data. There is not this option in the web builds as the code has no control over what data persists across browser sessions.
+The full task; including training, takes a while, especially if an EEG setup is used.\
+Consequently the **device builds** offer a Pause/Resume option. This utilises the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data.\
+To use this option, start the task with a Unique PiD via the text box in the Start Screen. The participant's data will be stored in  `unique-PiD/`; and the participant's task can be resumed by entering that PiD and selecting 'Resume Acquisition'.\
+If no PiD is entered; the folder will be auto-named as the timestamp taken at task start, `YYYY-MM-DD-HH-MM-SS/`. To find this, look in the [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html); this folder name can be used as PiD to resume.\
+Each data acquisition session will be saved under a folder in the 'root' with the name `DATA_YYYY-MM-DD-HH-MM-SS`.
 
-If the participant's task was started with a Unique PiD, the 'root' folder for the participant will be named as that `unique-PiD`. The participant's task can be resumed by entering that PiD and selecting 'Resume Acquisition'. If you forgot to enter a PiD, the data is still saved (and resumable)- look in the [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) behavioural data. The default root folder will be named as a timestamp taken at task start, `YYYY-MM-DD-HH-MM-SS`. This folder name can be used as PiD to resume.
+Pause-resume behaviour will picks up from the last finished trial, and uses [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data using `unique-PiD/STATE/...` which saves the current trial in `state.log`; along with `presentationOrder.log` and `truncationOrder.log`.
 
-Each 'session' will be saved under a folder in the 'root' with the name `DATA_YYYY-MM-DD-HH-MM-SS` so that it is clear when data was obtained.
+*Note that the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> can't be paused and restarted via a Participant ID.*
 
-Pause-resume behaviour will picks up from the last finished trial, and uses [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data using `STATE/...` which saves `state.log` for a given trial number in the task, and also `presentationOrder.log` and `truncationOrder.log` to ensure the state of the task persists.
-#
-Note that the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> can't be paused and restarted via a Participant ID. Instead, to pause, just click away from the browser.
+### Order Randomisation
+Patches drawn from the same reward rate curve must not be presented consecutively.\
+The patch presentation order is [randomised](/Assets/Scripts/PatchUtilities.cs) while keeping the distribution evenly spread across the original curves.\
+Similarly, 60% of the trials are  [truncated](/Assets/Scripts/PatchUtilities.cs).
+These orders are determined and stored at task initialisation.
 
-
-## Order Randomisation
-**Order**\
-The 90 [patches](/Assets/Resources/RewardData/) (see [plots](/Assets/Resources/Literature/MarcoRR.html)) are created from 18 different reward rate curves. Each curve was used to seed 5 different patches; which are in row order as batches of 5 in the raw data.\
-Patches drawn from the same reward rate curve must not be presented consecutively.
-As such, on task start; the patch presentation order is [randomised](/Assets/Scripts/PatchUtilities.cs) while keeping the distribution evenly spread across the original curves.\
-A similar implementation is used to [truncate](/Assets/Scripts/PatchUtilities.cs) 60% of the trials, by randomly truncating 3 of every 5 trials in the task.\
-These are determined and stored at the start of each task as `presentationOrder.log` and `truncationOrder.log` to ensure the state of the task can persist.
-
-## Data
+### Data
 
 The task reads out EEG stream data and beavioural (choice) data. [Behavioural data](/TASK/Data) is written to the (device specific) [Unity Application Persistent Data Path](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html).
 
-**On completion** of the task, the option to download zipped data should be presented.\
-On a **device build**; selecting the 'Download Data' button should open a file browser dialogue to save a .zip of the data.\
-On the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">**web version**</a>; selecting the 'Download Data' button should prompt a message allow downloads from the host (in this case github). On the web, there is the option to download at points throughout the task.
+**On completion** of the task, the option to download a `.zip` should be presented.\
+**On devices**; the 'Download Data' button should open a file browser dialogue to save data.
+On the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">**web version**</a>; selecting the 'Download Data' for the first time should prompt a message allow downloads from the host (in this case github).
 
 ### Behavioural Data
 
-The `leave` variable in the scripts is a nullable boolean. Post-LSD, it takes either `True` (1) or `False` (0), where 1 = leave, 0 = stay, following convention.
-Also note that on [load](/Assets/Scripts/GameData.cs) we linearly scale rewards from $0-1$, it is these max normalised values that are written out as behavioural data, not the [unnormalised raw rewards](/Assets/Resources/RewardData/).
+The `leave` variable in the scripts is a nullable boolean. Post-LSD, where, following convention, it takes either `True` (leave) (1) or `False` (stay) (0).\
 
-The behavioural data directories are `Participant_Root/DATA_YYYY-MM-DD-HH-MM-SS/` where `YYYY-MM-DD-HH-MM-SS` is the timestamp for that session start.\ In th
-We write out 5 datatsets and 1 log file, as follows:
+The behavioural data directories are `unique-PiD/DATA_YYYY-MM-DD-HH-MM-SS/` where `YYYY-MM-DD-HH-MM-SS` is the timestamp for that session.
+Data written out are as follows:
 
 | File  | Contains |
 | -------- | ------- |
-| `init.log` | Timestamp for task start/ resume |
-| `Choice.txt`| Leave-Stay Decision (Trial No, Patch No, And Leave? 1 = Leave, 0 = Stay) |
-| `RewardToLSD.txt`  | Rewards from Patch Start to LSD (in order as presented)  |
-| `LDStay.txt` | Rewards from LSD to end if Stay (in order as presented) |
-| `LDLeave.txt` | Rewards from LSD to end if Leave (in order as presented)  |
-| `PostLSD.txt` | What was actually presented (single 0 indicates truncation)  |
+| `init.log` | Task start/resume timestamp|
+| `Choice.txt`| Leave-stay decisions (Trial, Patch, Leave: 1/Stay: 0) |
+| `RewardToLSD.txt`  | Rewards before LSD  |
+| `LDStay.txt` |Rewards after LSD (if stay)   |
+| `LDLeave.txt` |Rewards after LSD (if leave)   |
+| `PostLSD.txt` | Presented rewards post-LSD (0 indicates truncation) |
 
 
 ### EEG Data
+*Note: No EEG with web version*\
 
-To streamline EEG integration, triggers take the form of event specific methods in the [eegStream script](/Assets/Scripts/EegStream.cs). This approach also allowed device-specific directives (i.e. WebGL builds won't look for an EEG stream).
+Event markers are streamed via Lab Streaming Layer (LSL) using [LSL4Unity](https://github.com/labstreaminglayer/LSL4Unity).\
+EEG markers triggered by events:
 
-#### Task Events & Messages (LSL Markers)
-
-Events in the code trigger messages sent over the LSL stream.\
-Note there is a 1s delay between the first spacebar press and the first fixaton cross appearing (to prevent events/ messages overlapping).
 
 | Event   | Message |
 | -------- | ------- |

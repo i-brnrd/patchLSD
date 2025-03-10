@@ -20,7 +20,7 @@
     </div>
     <div id="unity-warning"> </div>
     <div id="unity-footer">
-      <div id="unity-webgl-logo"></div>
+      <!-- <div id="unity-webgl-logo"></div> -->
       <div id="unity-fullscreen-button"></div>
       <div id="unity-build-title">PatchLSD</div>
     </div>
@@ -59,11 +59,11 @@
     }
 
     var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/WebAlpha.loader.js";
+    var loaderUrl = buildUrl + "/WebRelease.loader.js";
     var config = {
-      dataUrl: buildUrl + "/WebAlpha.data",
-      frameworkUrl: buildUrl + "/WebAlpha.framework.js",
-      codeUrl: buildUrl + "/WebAlpha.wasm",
+      dataUrl: buildUrl + "/WebRelease.data",
+      frameworkUrl: buildUrl + "/WebRelease.framework.js",
+      codeUrl: buildUrl + "/WebRelease.wasm",
       streamingAssetsUrl: "StreamingAssets",
       companyName: "ChildrenOfTheBandit",
       productName: "PatchLSD",
@@ -100,7 +100,7 @@
       canvas.style.height = "600px";
     }
 
-    canvas.style.background = "url('" + buildUrl + "/WebAlpha.jpg') center / cover";
+    canvas.style.background = "url('" + buildUrl + "/WebRelease.jpg') center / cover";
     loadingBar.style.display = "block";
 
     var script = document.createElement("script");
