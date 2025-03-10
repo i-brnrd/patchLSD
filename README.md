@@ -11,8 +11,6 @@ Unity implementation of  <a  href="https://doi.org/10.1038/ncomms12327"  target=
 ![alt text](Assets/Resources/Screenshots/combo.png)
 
 
-
-
 ## Description
 Intended to be a portable-ish OS/ device agnostic version of this task; to allow diverse teams (clinical, academic) to collect data easily. This version also contains optional EEG streaming via  <a  href="https://labstreaminglayer.readthedocs.io/index.html"  target="_blank">LSL's</a> (Lab Streaming Layer) custom Unity package,  <a  href="https://github.com/labstreaminglayer/LSL4Unity"  target="_blank">LSL4Unity</a>.
 
@@ -21,15 +19,14 @@ Intended to be a portable-ish OS/ device agnostic version of this task; to allow
 Unity 2D Project; very basic entry-level C#.\
 Builds tested on for webGL, Mac, Windows & Linux (the EEG LSL stream has only been tested on Windows). As of Feb 2025; iOS/android not tested.
 
-A functional  <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web demo</a> is available for use (no EEG).\
-This works on laptop browsers and touchscreen (phones/ tablets). [Behavioural data](/TASK/Data) can be downloaded via browser by the user at the end of the task (and 1/4, 1/2 and 3/4 of the way through for peace of mind).
+A functional  <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> is available for use (no EEG). [Behavioural data](/TASK/Data) can be downloaded by the user at the end of the task (and at set points throughout).
 
-### Task
+## Task
 See [here](/TASK.md) for full details on the actual task and programmatic implementation.
 
 ## Getting Started
 To build a version for use in your lab; Download Unity (& dependencies); download this repo & build.\
-If you just want to run through the task, a web demo version is available <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">here</a>;
+If you just want to run through the task, a web version is available <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">here</a>;
 
 ### Dependencies
 
@@ -48,11 +45,11 @@ Mihaela Lyustkanova (designed EEG integration)\
 ## Citation
 If you use this, please cite the original paper:
 
-Wittmann, M., Kolling, N., Akaishi, R. et al. Predictive decision making driven by multiple time-linked reward representations in the anterior cingulate cortex. Nat Commun 7, 12327 (2016). https://doi.org/10.1038/ncomms12327
+* Wittmann, M., Kolling, N., Akaishi, R. et al. Predictive decision making driven by multiple time-linked reward representations in the anterior cingulate cortex. Nat Commun 7, 12327 (2016). https://doi.org/10.1038/ncomms12327
 
-Please also consider citing this repo (note the DOI resolves to the latest version, see Zenodo for all versions)
+Please also consider citing this repo (note the DOI resolves to the latest version:)
 
-Barnard, I., Lyutskanova, M., Wittmann, M., & Gilbertson, T. (2025). Patch-LSD, Zenodo. https://doi.org/10.5281/zenodo.14977005
+* Barnard, I., Lyutskanova, M., Wittmann, M., & Gilbertson, T. (2025). Patch-LSD, Zenodo. https://doi.org/10.5281/zenodo.14977005
 
 ## Acknowledgments
 To [Marco Wittman](https://www.wittmann-lab.com/contact) for <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">Predictive decision making driven by multiple time-linked reward representations in the anterior cingulate cortex</a>
