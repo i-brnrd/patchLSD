@@ -3,7 +3,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14977005.svg)](https://doi.org/10.5281/zenodo.14977005)
 
-Unity implementation of the [Patch Foraging Task](https://doi.org/10.1038/ncomms12327) (Marco Wittmann, 2016) designed to investigate switching behaviour via Leave-Stay Decisions (LSD) influenced by reward rates.\
+Unity implementation of the [Patch Foraging Task](https://doi.org/10.1038/ncomms12327) (Marco Wittmann, 2016) designed to investigate the influence of time linked reward rates on switching behaviour.\
 This document also details the minor differences in functionality between device builds and the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
 
 ### Contents
@@ -25,7 +25,7 @@ This document also details the minor differences in functionality between device
 The task is designed to elucidate switching behaviour as a function of time linked reward rates. To place the following in context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
 
 On load, the Main Menu will appear, with two modes available, [Training (A, B & C)](#training) & [Task](#task-1).\
-In training mode, no data is stored or written out.\
+In training mode, no data is stored or written out.
 
 **Task Summary**\
 Participants are presented with patches containing rewards (presented at different rates).\
@@ -57,8 +57,8 @@ After a (varying) number of events in a **blue box** patch, participants are ask
 * Unity scripts (C#) use zero-based indexing, output data follows one-based indexing (MATLAB convention).
 
 ## Play
-On devices, pausing via <kbd>Esc</kbd> allows return to main menu,  no training progress is saved.
-On web 9including on deivce on pone
+On devices, pausing via <kbd>Esc</kbd> allows return to main menu.\
+On web; just click away from the browser to paause.
 
 
 ## Training
@@ -74,6 +74,7 @@ The training options A, B & C are set out in the <a  href="https://static-conten
 Participants are presented with 10 trials, comprising two patches of 15 events (so 30 events per trial).
 First the **red** (default) enviroment is presented, then the **blue** (changing) environment. Following this, the participant is prompted ot indicate which environment was preferred.\
 The 10 length matched patches are presented in the order below:
+
  $$ \text{Trials A } \coloneqq\{18, 42, 86, 27, 65, 39, 76, 4, 13, 53\}$$
 
 
