@@ -182,11 +182,9 @@ EEG markers triggered by events:
 | LSD Options Presented  | '8'  |
 | Leave Decision  | '4000'  |
 | Stay Decision  | '3000'  |
-| Stay Decision  | '3000'  |
 
 
 **Box Presentation Key:**
-
 | Digit   | Meaning | Key|
 | -------- | ------- | ------|
 | 1st  | Environment Colour | 1 = Blue; 2 = Red |
@@ -196,8 +194,7 @@ EEG markers triggered by events:
 | 7th & 8th | Patch Number | 01-90 (random)  |
 | 9th & 10th  | Box %age Full  | 00-99 (i.e. $R*99$)|
 
-Examples:
-
+**Examples:**
  Message  | Meaning
 | -------- | -------
 | ‘1101013500'  | Blue, Pre LSD, 1st Step (pre LSD), 1st trial, Patch 35, Empty (00%)  |
