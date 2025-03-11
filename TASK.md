@@ -102,11 +102,11 @@ Participants are presented with all [90 changing patches](/Assets/Resources/Rewa
 
 The task plays through all 90 trials unless [paused & resumed](#pausing). On completion, there is an option to download and save the [behavioural data](#behavioural-data) as a `.zip` (as well as being recoverable from the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data).
 
-### Leave-Stay Decision & Feedback
-After the [changing patch](/Assets/Resources/RewardData/rew2ld.csv) is presented, a question mark is shown on screen for 2s to indicate the start of the decision phase.
-**Leave Stay Decision**: two buttons are diplayed (one for leave, one for stay, positions switch randomly).\
-Once a decision is made via selecting an option, the choice is [recorded](), and is highlighted in yellow for 2 seconds.\
-To shorten the experiment, 60% of trials are truncated post LSD. If a trial has not been selected for [truncation](#order-randomisation) then the patch chosen is presented; and feedback follows. If the trial has been selected for [truncation](#order-randomisation) then the post Leave Stay Decision patch is not shown, and the feedback is presented immediately.
+### Leave-Stay Decision (LSD) & Feedback
+After the first part of the [changing patch](/Assets/Resources/RewardData/rew2ld.csv) is presented, a question mark is shown on screen for 2s to indicate the start of the decision phase.\
+Then **'Leave'** and **'Stay'** options are presented (positions switch randomly).\
+When an option is chosen, the choice is [recorded](#data) and highlighted in yellow for 2 seconds.\
+To shorten the experiment, 60% of trials are [truncated](#order-randomisation)  post LSD. If a trial is not truncated, the patch chosen at LSD is presented; and feedback follows. If the trial is truncated, then the post Leave Stay Decision patch is not shown, and the feedback is presented immediately.
 
 Feedback takes the form of points calculated as follows:
 
@@ -123,18 +123,18 @@ Feedback takes the form of points calculated as follows:
 
 
 \
-After 1/4, 1/2 and 3/4 of the task, the total bonus points accumulated are displayed. At these points in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>; the option to download data is offered (to mitigate the risk of data loss).
+After 1/4, 1/2 and 3/4 of the task, the total bonus points accumulated are displayed. At these points in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>; the option to download data is offered.
 
 ### Pausing
-The full task; including training, takes a while, especially if an EEG setup is used.\
+Running through the training and the task takes several hours.
 Consequently the **device builds** offer a Pause/Resume option. This utilises the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data.\
-To use this option, start the task with a Unique PiD via the text box in the Start Screen. The participant's data will be stored in  `unique-PiD/`; and the participant's task can be resumed by entering that PiD and selecting 'Resume Acquisition'.\
+To use this, start the task with a Unique PiD via the text box in the Start Screen. The participant's data will be stored in  `unique-PiD/`.  That participant's task can be resumed by re-entering that PiD and selecting 'Resume Acquisition'.\
 If no PiD is entered; the folder will be auto-named as the timestamp taken at task start, `YYYY-MM-DD-HH-MM-SS/`. To find this, look in the [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html); this folder name can be used as PiD to resume.\
 Each data acquisition session will be saved under a folder in the 'root' with the name `DATA_YYYY-MM-DD-HH-MM-SS`.
 
 Pause-resume behaviour will picks up from the last finished trial, and uses [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data using `unique-PiD/STATE/...` which saves the current trial in `state.log`; along with `presentationOrder.log` and `truncationOrder.log`.
 
-*Note that the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> can't be paused and restarted via a Participant ID.*
+*Note that the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> cannot be paused and restarted via a Participant ID.*
 
 ### Order Randomisation
 Patches drawn from the same reward rate curve must not be presented consecutively.\
