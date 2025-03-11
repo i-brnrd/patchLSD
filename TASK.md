@@ -4,7 +4,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14977005.svg)](https://doi.org/10.5281/zenodo.14977005)
 
 Unity implementation of the [Patch Foraging Task](https://doi.org/10.1038/ncomms12327) (Marco Wittmann, 2016) designed to investigate the influence of time linked reward rates on switching behaviour.\
-This document also details the minor differences in functionality between device builds and the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
+This document also details the minor differences in functionality between device builds and the <a  href="https://tom-gilbertsons-lab.github.io/patchLSD//"  target="_blank">web version</a>.
 
 ### Contents
 * [Overview](#overview)
@@ -22,7 +22,7 @@ This document also details the minor differences in functionality between device
 
 
 ## Overview
-For context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
+For context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://tom-gilbertsons-lab.github.io/patchLSD//"  target="_blank">web version</a>.
 
 On load, the Main Menu will appear, with two modes available, [Training (A, B & C)](#training) & [Task](#task-1).\
 
@@ -123,7 +123,7 @@ Feedback takes the form of points calculated as follows:
 
 
 \
-After 1/4, 1/2 and 3/4 of the task, the total bonus points accumulated are displayed. At these points in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>; the option to download data is offered.
+After 1/4, 1/2 and 3/4 of the task, the total bonus points accumulated are displayed. At these points in the <a  href="https://tom-gilbertsons-lab.github.io/patchLSD//"  target="_blank">web version</a>; the option to download data is offered.
 
 ### Pausing
 Running through the training and the task takes several hours.
@@ -134,7 +134,7 @@ Each data acquisition session will be saved under a folder in the 'root' with th
 
 Pause-resume behaviour will picks up from the last finished trial, and uses [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data using `unique-PiD/STATE/...` which saves the current trial in `state.log`; along with `presentationOrder.log` and `truncationOrder.log`.
 
-*Note that the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a> cannot be paused and restarted via a Participant ID.*
+*Note that the <a  href="https://tom-gilbertsons-lab.github.io/patchLSD//"  target="_blank">web version</a> cannot be paused and restarted via a Participant ID.*
 
 ### Order Randomisation
 Patches drawn from the same reward rate curve must not be presented consecutively.\
@@ -148,7 +148,7 @@ The task reads out EEG stream data and beavioural (choice) data. [Behavioural da
 
 **On completion** of the task, the option to download a `.zip` should be presented.\
 **On devices**; the 'Download Data' button should open a file browser dialogue to save data.
-On the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">**web version**</a>; selecting the 'Download Data' for the first time should prompt a message allow downloads from the host (in this case github).
+On the <a  href="https://tom-gilbertsons-lab.github.io/patchLSD//"  target="_blank">**web version**</a>; selecting the 'Download Data' for the first time should prompt a message allow downloads from the host (in this case github).
 
 ### Behavioural Data
 
