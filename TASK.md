@@ -22,13 +22,12 @@ This document also details the minor differences in functionality between device
 
 
 ## Overview
-The task is designed to elucidate switching behaviour as a function of time linked reward rates. To place the following in context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
+For context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">web version</a>.
 
 On load, the Main Menu will appear, with two modes available, [Training (A, B & C)](#training) & [Task](#task-1).\
-In training mode, no data is stored or written out.
 
 **Task Summary**\
-Participants are presented with patches containing rewards (presented at different rates).\
+Participants are presented with patches containing rewards, presented at different rates.\
 Patches (coloured boxes) consist of non-reward events (empty boxes) and reward events (boxes with gold bars). Between events, a fixation cross is shown.
 
 **Blue (Changing) Environment:**\
@@ -45,7 +44,7 @@ The **red box** indicates a stable (default) reward rate that participants learn
 | ![Alt text](/Assets/Resources/Screenshots/NonReward_Red.png) | ![Alt text](Assets/Resources/Screenshots/Reward_Red.png) |
 
 
-After a (varying) number of events in a **blue box** patch, participants are asked to decide whether to stay in that **blue box** patch, or leave to go to a **red box** patch via a leave-stay decision
+After a (varying) number of events in a **blue** (changing) patch, participants are asked to decide whether to stay in that **blue** (changing) patch, or leave to go to a **red** (default) patch via a leave-stay decision.
 
  ![Alt text](Assets/Resources/Screenshots/LSD.png)
 
@@ -72,7 +71,7 @@ The training options A, B & C are set out in the <a  href="https://static-conten
 
 [Training A](/Assets/Scripts/TrainingAController.cs) familiarises participants with the default (red) patch reward rate. See <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a> for further details.\
 Participants are presented with 10 trials, comprising two patches of 15 events (so 30 events per trial).
-First the **red** (default) enviroment is presented, then the **blue** (changing) environment. Following this, the participant is prompted ot indicate which environment was preferred.\
+First the **red** (default) enviroment is presented, then the **blue** (changing) environment. Following this, the participant is prompted to indicate which environment was preferred.\
 The 10 length matched patches are presented in the order below:
 
  $$ \text{Trials A } \coloneqq\{18, 42, 86, 27, 65, 39, 76, 4, 13, 53\}$$
@@ -85,6 +84,7 @@ The 10 length matched patches are presented in the order below:
 ### Training B:
 [Training B](/Assets/Scripts/TrainingBController.cs) familiarises participants with monotonically changing reward rates.  See <a  href="https://static-content.springer.com/esm/art%3A10.1038%2Fncomms12327/MediaObjects/41467_2016_BFncomms12327_MOESM821_ESM.pdf"  target="_blank"> supplementary material</a> for further details.\
 Participants are presented with 3 repeats of a set of 3 'full' **blue** (changing) patches:
+
 $$\text{Trials B } \coloneqq \{8, 42, 82\}$$
 
     int[] trialsB = { 7, 41, 81 };
@@ -94,14 +94,13 @@ The rewards presented in Training B use a full **blue** (changing) patch- a give
 During the first set, participants are asked to pay attention to the change in reward magnitudes (ignoring delays). In the second set, participants are asked to pay attention to the change of reward delays (ignoring reward magnitudes), and in the final set, to the changes in both magnitudes and delays.
 
 ### Training C:
-[Training C](/Assets/Scripts/TrainingCController.cs) is a shortened (18 trials) version of the experimental task including leave-stay decisions. Participants are given performance feedback after each trial.\
-The 18 trials are [randomly selected](#order-randomisation) patches from the full task set.
+[Training C](/Assets/Scripts/TrainingCController.cs) is a shortened version of the experimental task, including leave-stay decisions. Participants are given performance feedback after each trial. Training C comprises 18 [randomly selected](#order-randomisation) patches from the full task set.
 
 
 ## Task
-Participants are presented with all [90 changing patches](/Assets/Resources/RewardData/) (visualised [here](/Assets/Resources/Literature/MarcoRR.html)) in an evenly distributed [random order](#order-randomisation).
+Participants are presented with all [90 changing patches](/Assets/Resources/RewardData/) (visualised [here](/Assets/Resources/Literature/MarcoRR.html)) in [random order](#order-randomisation).
 
-The task plays right through the 90 trials unless paused & resumed (see below). On completion, there is an option to download and save the [behavioural data](#behavioural-data) can be saved as a `.zip` (as well as being recoverable from the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data).
+The task plays through all 90 trials unless [paused & resumed](#pausing). On completion, there is an option to download and save the [behavioural data](#behavioural-data) as a `.zip` (as well as being recoverable from the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data).
 
 ### Leave-Stay Decision & Feedback
 After the [changing patch](/Assets/Resources/RewardData/rew2ld.csv) is presented, a question mark is shown on screen for 2s to indicate the start of the decision phase.

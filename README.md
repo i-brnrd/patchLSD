@@ -26,7 +26,8 @@ See [here](/TASK.md) for full details on the actual task and programmatic implem
 
 ## Getting Started
 To build a version for use in your lab; Download Unity (& dependencies); download this repo & build.\
-If you just want to run through the task, a web version is available <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">here</a>;
+There are executables bundled with the releases for Windows, Mac & Linux (& [WebGL](/docs)).
+If you just want to run through the task, a web version is available <a  href="https://i-brnrd.github.io/patchLSD/"  target="_blank">here</a>.
 
 ### Dependencies
 
