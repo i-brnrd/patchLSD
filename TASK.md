@@ -18,13 +18,14 @@ This document also details the minor differences in functionality between device
     * [Presentation Orders](#order-randomisation)
     * [Data Out](#data)
         * [Behavioural (Choice) Data](#behavioural-data)
+            * [Locally Stored Data](#locally-stored-data)
         * [EEG Stream](#eeg-data)
 
 
 ## Overview
 For context, read the <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">original paper</a> and play a few rounds of the task in the <a  href="https://tom-gilbertsons-lab.github.io/patchLSD/"  target="_blank">web version</a>.
 
-On load, the Main Menu will appear, with two modes available, [Training (A, B & C)](#training) & [Task](#task-1).\
+On load, the Main Menu will appear, with two modes available, [Training (A, B & C)](#training) & [Task](#task-1).
 
 **Task Summary**\
 Participants are presented with patches containing rewards, presented at different rates.\
@@ -100,7 +101,7 @@ During the first set, participants are asked to pay attention to the change in r
 ## Task
 Participants are presented with all [90 changing patches](/Assets/Resources/RewardData/) (visualised [here](/Assets/Resources/Literature/MarcoRR.html)) in [random order](#order-randomisation).
 
-The task plays through all 90 trials unless [paused & resumed](#pausing). On completion, there is an option to download and save the [behavioural data](#behavioural-data) as a `.zip` (as well as being recoverable from the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data).
+The task plays through all 90 trials unless [paused & resumed](#pausing). On completion, there is an option to download and save the [behavioural data](#behavioural-data) as a `.zip` (as well as being recoverable from the device-specific [locally stored data](#locally-stored-data) data.
 
 ### Leave-Stay Decision (LSD) & Feedback
 After the first part of the [changing patch](/Assets/Resources/RewardData/rew2ld.csv) is presented, a question mark is shown on screen for 2s to indicate the start of the decision phase.\
@@ -127,12 +128,12 @@ After 1/4, 1/2 and 3/4 of the task, the total bonus points accumulated are displ
 
 ### Pausing
 Running through the training and the task takes several hours.
-Consequently the **device builds** offer a Pause/Resume option. This utilises the device-specific [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data.\
+Consequently the **device builds** offer a Pause/Resume option. This utilises the device-specific [locally stored](#locally-stored-data) data.\
 To use this, start the task with a Unique PiD via the text box in the Start Screen. The participant's data will be stored in  `unique-PiD/`.  That participant's task can be resumed by re-entering that PiD and selecting 'Resume Acquisition'.\
-If no PiD is entered; the folder will be auto-named as the timestamp taken at task start, `YYYY-MM-DD-HH-MM-SS/`. To find this, look in the [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html); this folder name can be used as PiD to resume.\
+If no PiD is entered; the folder will be auto-named as the timestamp taken at task start, `YYYY-MM-DD-HH-MM-SS/`. To find this, look in the [locally stored](#locally-stored-data); this folder name can be used as PiD to resume.\
 Each data acquisition session will be saved under a folder in the 'root' with the name `DATA_YYYY-MM-DD-HH-MM-SS`.
 
-Pause-resume behaviour will picks up from the last finished trial, and uses [locally stored](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) data using `unique-PiD/STATE/...` which saves the current trial in `state.log`; along with `presentationOrder.log` and `truncationOrder.log`.
+Pause-resume behaviour will picks up from the last finished trial, and uses [locally stored](#locally-stored-data) data using `unique-PiD/STATE/...` which saves the current trial in `state.log`; along with `presentationOrder.log` and `truncationOrder.log`.
 
 *Note that the <a  href="https://tom-gilbertsons-lab.github.io/patchLSD/"  target="_blank">web version</a> cannot be paused and restarted via a Participant ID.*
 
@@ -144,7 +145,7 @@ These orders are determined and stored at task initialisation.
 
 ### Data
 
-The task reads out EEG stream data and beavioural (choice) data. [Behavioural data](/TASK/Data) is written to the (device specific) [Unity Application Persistent Data Path](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html).
+The task reads out EEG stream data and beavioural (choice) data. [Behavioural data](/TASK/Data) is written to the (device specific) [locally stored data](#locally-stored-data).
 
 **On completion** of the task, the option to download a `.zip` should be presented.\
 **On devices**; the 'Download Data' button should open a file browser dialogue to save data.
@@ -165,6 +166,10 @@ Data written out are as follows:
 | `LDStay.txt` |Rewards after LSD (if stay)   |
 | `LDLeave.txt` |Rewards after LSD (if leave)   |
 | `PostLSD.txt` | Presented rewards post-LSD (0 indicates truncation) |
+
+#### Locally Stored Data
+The [Unity Application Persistent Data Path](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) is used to persist data on devices *(this path is also used on Web builds, but direct access is challenging)*.\
+If you use the executables as provided in the releases (rather than building your own); with reference to the [device specific path](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) `<companyname> = ChildrenOfTheBandit` and `<productname> = PatchLSD`.
 
 
 ### EEG Data

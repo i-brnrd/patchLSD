@@ -3,10 +3,7 @@
 
 # Patch-LSD
 
-
-
 Unity implementation of  <a  href="https://doi.org/10.1038/ncomms12327"  target="_blank">Marco Wittman's Patch Foraging Task</a>:
-
 
 <small> A reinforcement learning foraging task developed to elucidate switching behaviour (Leave Stay Decisions) as a function of time linked reward rates.
 
@@ -26,7 +23,7 @@ Builds tested on for webGL, Mac, Windows & Linux (the EEG LSL stream has only be
 A functional  <a  href="https://tom-gilbertsons-lab.github.io/patchLSD/"  target="_blank">web version</a> is available for use (no EEG). [Behavioural data](/TASK/Data) can be downloaded by the user at the end of the task (and at set points throughout).
 
 ## Task
-See [here](/TASK.md) for full details on the actual task and programmatic implementation.
+See [here](/TASK.md) for full details on the actual task, programmatic implementation and data retrieval.
 
 ## Getting Started
 To build a version for use in your lab; Download Unity (& dependencies); download this repo & build.\

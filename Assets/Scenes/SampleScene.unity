@@ -3166,7 +3166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 981b5831cfbb34b8fb822c5bcfd9d6ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameManager: {fileID: 305056123}
+  trainingObject: {fileID: 755549374}
   changingButton: {fileID: 1529040888}
   redButton: {fileID: 1452101336}
   originalColour: {r: 0, g: 0, b: 0, a: 0}

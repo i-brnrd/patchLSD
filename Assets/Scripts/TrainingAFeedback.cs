@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public class TrainingAFeedback : MonoBehaviour
 {
     //this needs simplified the choice logic has gone ott and can be combined with LSD script 
-    public GameManager gameManager;
+    public GameObject trainingObject;
     private TrainingAController trainingAController;
-
+    
     public GameObject changingButton;
     public GameObject redButton;
 
@@ -17,7 +17,7 @@ public class TrainingAFeedback : MonoBehaviour
 
     private void Awake()
     {
-        trainingAController = gameManager.GetComponent<TrainingAController>();
+        trainingAController = trainingObject.GetComponent<TrainingAController>();
         originalColour = changingButton.GetComponent<Button>().colors.normalColor;
         //make sure on start all objects in the LSD are inactive 
         ActivateButtons(false);
